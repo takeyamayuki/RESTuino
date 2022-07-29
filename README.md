@@ -6,19 +6,19 @@ Arduino based bootloader for ESP32 that can handle various arduino functions via
 - Applications for IoT clients
 
 ## features
-[x] digitalread  
-[] pullupread  
-[x] digitalwrite PUT  
-[] digitalwrite GET  
-[x] analogread  
-[x] ledcwrite (analogwrite for esp32)  
-[x] servo  
-[] touch  
-[] dacwrite  
-[x] eeprom save of settings   
-[x] eeprom load of settings   
-[] Apply settings saved in eeprom   
-[] Multiple servo, multiple ledcwrite   
+- [x] digitalread  
+- [ ] pullupread  
+- [x] digitalwrite PUT  
+- [ ] digitalwrite GET  
+- [x] analogread  
+- [x] ledcwrite (analogwrite for esp32)  
+- [x] servo  
+- [ ] touch  
+- [ ] dacwrite  
+- [x] eeprom save of settings   
+- [x] eeprom load of settings   
+- [ ] Apply settings saved in eeprom   
+- [ ] Multiple servo, multiple ledcwrite   
 
 ## Usage
 
