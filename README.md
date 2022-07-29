@@ -65,8 +65,8 @@ Arduino based bootloader for ESP32 that can handle various arduino functions via
 
 ### GPIO access
 
-- http://restuio.local/gpio{pin_number}   
-    {pin number} is the pin number of the GPIO.  For example, `http://restuio.local/gpio15` is the GPIO15 of ESP32.
+- http://restuino.local/gpio{pin_number}   
+    {pin_number} is the pin number of the GPIO.  For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
 
 
 
@@ -83,7 +83,7 @@ Arduino based bootloader for ESP32 that can handle various arduino functions via
 
     For example, digtalWrite
     ```sh
-    $ curl restuino.local/gpio{i} -X PUT -H 'Content-Type: text/plain' -d 'digitalwrite'
+    $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalwrite'
     ```
 
 2. Use `PUT` to change the output value of any pin.
@@ -131,8 +131,8 @@ Arduino based bootloader for ESP32 that can handle various arduino functions via
 
 - digitalRead
     ```sh
-    # l(digitalRead enabled pin)=1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
-    $ curl restuino.local/gpio{l}
+    # m(digitalRead enabled pin)=1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
+    $ curl restuino.local/gpio{m}
     ```
 - root
     ```sh
