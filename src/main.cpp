@@ -85,25 +85,25 @@ void handleRoot(void)
       }
       EEPROM.commit();
     }
-    else if (req == "read")
+  }
+  else if (server.method() == HTTP_GET)
+  {
+    int rom_ad = 0;
+    String mes;
+    mes += "GPIO   |";
+    for (int i = 0; i < n; i++)
+      mes += String(i) + " ";
+    // server.send(100, "text/plain", "EEPROM reading...\n");
+    mes += "\nstatus |";
+    for (int i = 0; i < n; i++)
     {
-      int rom_ad = 0;
-      String mes;
-      mes += "GPIO   |";
-      for (int i = 0; i < n; i++)
-        mes += String(i) + " ";
-      // server.send(100, "text/plain", "EEPROM reading...\n");
-      mes += "\nstatus |";
-      for (int i = 0; i < n; i++)
-      {
-        EEPROM.get(rom_ad, gpio_arr[i]);
-        mes += String(gpio_arr[i]) + " ";
-        rom_ad += 4;
-      }
-      mes += "\n";
-      server.send(200, "text/plain", mes);
-      // pinに反映させる
+      EEPROM.get(rom_ad, gpio_arr[i]);
+      mes += String(gpio_arr[i]) + " ";
+      rom_ad += 4;
     }
+    mes += "\n";
+    server.send(200, "text/plain", mes);
+    // pinに反映させる
   }
 }
 
