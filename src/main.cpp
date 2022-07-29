@@ -90,11 +90,8 @@ void handleRoot(void)
   {
     int rom_ad = 0;
     String mes;
-    mes += "GPIO   |";
-    for (int i = 0; i < n; i++)
-      mes += String(i) + " ";
     // server.send(100, "text/plain", "EEPROM reading...\n");
-    mes += "\nstatus |";
+    mes += "status ";
     for (int i = 0; i < n; i++)
     {
       EEPROM.get(rom_ad, gpio_arr[i]);
@@ -122,29 +119,38 @@ void handle_gpio(int pin)
   if (server.method() == HTTP_POST)
   {
     String req = server.arg("plain"); // get request body
-    if (req == "servo")               // servo
+
+    if (req == "servo") // servo
     {
       servo1.setPeriodHertz(50); // Standard 50hz servo
       servo1.attach(pin, minUs, maxUs);
       flag_check();
       gpio_arr[pin] = dservo;
     }
+    // ledcWrite enable pin
+    // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33
     else if (req == "ledcwrite")
     {
       ledcSetup(0, 12800, 8);
       ledcAttachPin(pin, 0);
       gpio_arr[pin] = dledcwrite;
     }
+    // digitalWrite enable pin
+    // 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
     else if (req == "digitalwrite")
     {
       pinMode(pin, OUTPUT);
       gpio_arr[pin] = ddigitalwrite;
     }
+    // digitalRead enable pin
+    // 1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
     else if (req == "digitalread")
     {
       pinMode(pin, INPUT);
       gpio_arr[pin] = ddigitalread;
     }
+    // analogRead anable pin
+    // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39
     else if (req == "analogread")
     {
       if (gpio_arr[pin] != danalogread)
@@ -178,8 +184,6 @@ void handle_gpio(int pin)
       ledcWrite(0, target.toInt());
       server.send(200, "text/plain", "dledcWrite " + target + "\n");
     }
-    // digitalWrite enable pin
-    // 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
     else if (gpio_arr[pin] == ddigitalwrite)
     {
       if (target == "HIGH")

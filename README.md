@@ -1,15 +1,38 @@
 # RESTuino
+Arduino based bootloader for ESP32 that can handle various arduino functions via REST API
+
+## design concept
+- Interactive microcomputer programming
+- Applications for IoT clients
+
+## features
+- [x] digitalread
+- [] pullupread
+- [x] digitalwrite PUT
+- [] digitalwrite GET
+- [x] analogread
+- [x] ledcwrite (analogwrite for esp32)
+- [x] servo
+- [] touch
+- [] dacwrite
+- [x] eeprom save of settings 
+- [x] eeprom load of settings 
+- [] Apply settings saved in eeprom 
+- [] 複数サーボ、複数ledcwrite
+
+
+
 
 ## Usage
 
 ### build and upload
 1. Clone the repository
     ```
-    $ git clone https://github.com/takeyamayuki/RESTful-servo-motor.git
+    $ git clone https://github.com/takeyamayuki/RESTuino.git
     ```
 2. Define `ssid`, `password` of your wifi router by creating your own header file.
     ```sh
-    $ cd RESTful-servo-motor
+    $ cd RESTuino
     $ vi src/ssid_define.h
     ``` 
     Change MY_SSID, MY_SSID_PASS to your wifi SSID, password.
@@ -23,48 +46,104 @@
     #endif
     ```
 3. Change `upload_port`, `monitor_port` in [platformio.ini](platformio.ini) to your own.
+    ```sh
+    $ ls /dev/tty.*
+    /dev/tty.BLTH				        /dev/tty.usbmodem529A0097081
+    /dev/tty.Bluetooth-Incoming-Port	/dev/tty.wchusbserial529A0097081
+    ```
+    ```platformio.ini
+    upload_port = /dev/tty.wchusbserial529A0097081
+    monitor_port = /dev/tty.wchusbserial529A0097081
+    ```
 4. Install `ESP32Servo` on PlatformIO
 4. Build and upload using platformIO.
 5. Install this system wherever you like!  
 
+## URI
+### root
+- http://{IP_address}  
+    The IP address can be obtained via serial communication immediately after startup of this program.
 
-### PUT method
+- http://restuino.local
 
-`Free angle mode` (Request body={0~180 arbitrary number})
+### GPIO access
 
-```sh
-# a servo motor moves to the angle specified by 'angle'
-$ curl {your IP address here} -X PUT -H 'Content-Type: text/plain' -d 'angle'
+- http://restuio.local/gpio{pin_number}   
+    {pin number} is the pin number of the GPIO.  For example, `http://restuio.local/gpio15` is the GPIO15 of ESP32.
 
-# e.g.
-$ curl 192.168.0.28 -X PUT -H 'Content-Type: text/plain' -d '120'
-$ curl rsm.local -X PUT -H 'Content-Type: text/plain' -d '120'
-# rsm means RESTful-servo-motor
-```
 
-`SwitchBot mode` (Request body='switch')  
 
-```sh
-# Each time the following command is sent, the servo motor moves back and forth between angle and angle0
-$ curl {your IP address here} -X PUT -H 'Content-Type: text/plain' -d 'switch'
+## RESTful API
+1. Use `POST` to set the status of a pin in the same way as arduino.  
 
-# e.g.
-$ curl 192.168.0.28 -X PUT -H 'Content-Type: text/plain' -d 'switch'
-$ curl rsm.local -X PUT -H 'Content-Type: text/plain' -d 'switch'
-```
+    Specify the target GPIO pin by URI. The items to be set in the request body are all lower-case and specify arduino function names. For now, the following functions are available.  
 
-### GET method
+    - digitalread
+    - digitalwrite
+    - analogread
+    - servo
+    - ledcwrite
 
-```sh
-# Get the current angle.
-$ curl {your IP address here} -X GET
-# e.g.
-$ curl rsm.local
-$ curl rsm.local -X GET
-```
-or you can browse current servo angle by using browser.
+    For example, digtalWrite
+    ```sh
+    $ curl restuino.local/gpio{i} -X PUT -H 'Content-Type: text/plain' -d 'digitalwrite'
+    ```
 
-http://rsm.local
+2. Use `PUT` to change the output value of any pin.
+- digitalwrite  
+    ```sh
+    $ curl restuino.local/gpio{i} -X PUT -H 'Content-Type: text/plain' -d '{HIGH|LOW}'
+    # i(digitalWrite enabled pin)=0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
+    # e.g.
+    $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
+    ```
+- ledcwrite
+    ```sh
+    $ curl restuino.local/gpio{j} -X PUT -H 'Content-Type: text/plain' -d '{value:0-256}'
+    # j(ledclWrite enabled pin)=0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33
+    ```
+    e.g.
+    ```sh
+    $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '100'
+    ```
+- servo
+    ```sh
+    $ curl restuino.local/gpio{k} -X PUT -H 'Content-Type: text/plain' -d '{value:0-180}|"switch"'
+    # {value:0-180}:a servo motor moves to the angle specified by value.
+    # "switch": Each time the following command is sent, the servo motor moves back and forth between angle and angle0.
+    ```
+    e.g.
+    ```sh
+    $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
+    ```
+- root
+    ```sh
+    $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'save|reboot'
+    ```
+    Save the current pin status to EEPROM with `save`.   
+    Reboot with `reboot`.
 
-<img width="751" alt="スクリーンショット 2022-05-21 午後1 59 16" src="https://user-images.githubusercontent.com/22733958/169636157-6faa444a-d949-414c-90da-792bb149acd0.png">
+3. Use `GET` to get the status of any pin.  
+
+    Of course, the following information can also be obtained by opening any URI in a browser.
+- analogRead
+    ```sh
+    # l(analogRead enabled pin)=0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39
+    $ curl restuino.local/gpio{l}
+    ```
+
+- digitalRead
+    ```sh
+    # l(digitalRead enabled pin)=1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
+    $ curl restuino.local/gpio{l}
+    ```
+- root
+    ```sh
+    $ curl restuino.local
+    status 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    # Returns the status of all GPIO pins.
+    ```
+4. Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
+
+
 
