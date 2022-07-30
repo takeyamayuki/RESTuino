@@ -1,5 +1,5 @@
 # RESTuino
-Arduino based bootloader for ESP32 that can handle various arduino functions via REST API
+An arduino application for ESP32 to handle arduino GPIOs via REST API.
 
 ## design concept
 - Interactive microcomputer programming
@@ -89,9 +89,11 @@ Arduino based bootloader for ESP32 that can handle various arduino functions via
 2. Use `PUT` to change the output value of any pin.
 - digitalwrite  
     ```sh
-    $ curl restuino.local/gpio{i} -X PUT -H 'Content-Type: text/plain' -d '{HIGH|LOW}'
+    $ curl restuino.local/gpio{i} -X PUT -H 'Content-Type: text/plain' -d 'HIGH|LOW'
     # i(digitalWrite enabled pin)=0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
-    # e.g.
+    ```
+    e.g.
+    ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
     ```
 - ledcwrite
@@ -137,8 +139,8 @@ Arduino based bootloader for ESP32 that can handle various arduino functions via
 - root
     ```sh
     $ curl restuino.local
-    status 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-    # Returns the status of all GPIO pins.
+    0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    # Returns the status of all GPIO pins. GPIO0-GPIO39 are separated by spaces.
     ```
 4. Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
 

@@ -91,8 +91,8 @@ void handleRoot(void)
     int rom_ad = 0;
     String mes;
     // server.send(100, "text/plain", "EEPROM reading...\n");
-    mes += "status ";
-    for (int i = 0; i < n; i++)
+    // mes += "status ";
+    for (int i = 0; i < 40; i++)//GPIO:0-39
     {
       EEPROM.get(rom_ad, gpio_arr[i]);
       mes += String(gpio_arr[i]) + " ";
