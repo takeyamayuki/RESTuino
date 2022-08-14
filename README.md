@@ -8,8 +8,7 @@ An arduino application for ESP32 to handle arduino GPIOs via REST API.
 
 
 # Usage
-
-### build and upload
+## build and upload
 1. Clone the repository
     ```
     $ git clone https://github.com/takeyamayuki/RESTuino.git
@@ -43,7 +42,7 @@ An arduino application for ESP32 to handle arduino GPIOs via REST API.
 6. Install this system wherever you like!  
 
 
-# URI
+## URI
 ### root
 - http://(IP_address)   
     The IP address can be obtained via serial communication or `http://restuino.local` with a browser.
@@ -56,12 +55,12 @@ An arduino application for ESP32 to handle arduino GPIOs via REST API.
     (pin_number) is the pin number of the GPIO.  For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
 
 
-# RESTful API
+## RESTful API
 > **note**  
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
 
-## @`http://restuino.local/gpio(pin_number)`  
+### @`http://restuino.local/gpio(pin_number)`  
 Specify the target GPIO pin by URI. 
 
 1. Use `POST` to set the status of a pin in the same way as arduino.        
@@ -131,7 +130,7 @@ Specify the target GPIO pin by URI.
 
 4. Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
 
-## @`http://restuino.local/`
+### @`http://restuino.local/`
 
 - `POST`  
     request body: `save` or `reboot` or `reflect`
