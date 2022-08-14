@@ -2,9 +2,11 @@
 An arduino application for ESP32 to handle arduino GPIOs via REST API.
 
 # Features
-- Interactive microcomputer programming
-- Applications for IoT clients
-- REST API for arduino GPIOs
+Until now, IoT systems have only communicated  **data**. 
+
+RESTuino makes it possible to communicate **system functions** in the IoT.
+
+It allows interactive programming via [`curl`](https://github.com/curl/curl) as well as serving as an IoT client!
 
 
 # Usage
