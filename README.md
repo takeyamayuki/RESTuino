@@ -56,7 +56,7 @@ An arduino application for ESP32 to handle arduino GPIOs via REST API.
 
 
 ## RESTful API
-> **note**  
+> **Note**   
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
 
