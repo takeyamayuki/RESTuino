@@ -6,7 +6,7 @@
 #include <WebServer.h>
 #include <ESP32Servo.h>
 
-#include <ssid_define.hpp>
+#include "ssid_define.hpp"
 
 WebServer server(80);
 
@@ -21,8 +21,8 @@ const int _digitalwrite = 2;
 const int _analogread = 3;
 const int _ledcwrite = 4;
 const int _servo = 5;
-const int _touch = 6; /////////////////////////kore
-const int _dacwrite = 7;///////////////////////kore
+const int _touch = 6;    /////////////////////////kore
+const int _dacwrite = 7; ///////////////////////kore
 
 const int _save = 100;
 const int _reflect = 101;
@@ -31,12 +31,12 @@ const int _reboot = 102;
 /* servo */
 Servo servo1;
 // Published values for SG90 servos; adjust if needed
-const uint32_t minUs = 0;
+const uint8_t minUs = 0;
 const uint32_t maxUs = 5000;
 // bool to0_flag = false;
 // angle > angle0 >= 0にすること
-const uint32_t angle = 60;
-const uint32_t angle0 = 5;
+const uint8_t angle = 60;
+const uint8_t angle0 = 5;
 
 uint32_t RequestToInt(String req)
 {
@@ -77,7 +77,7 @@ bool to0_flag()
 }
 
 // mode=true:angle0,angleのスイッチ, mode=false:自由角度への移動
-void move_sg90(bool mode, uint32_t k)
+void move_sg90(bool mode, uint32_t to_angle)
 {
   if (mode)
   {
@@ -87,7 +87,7 @@ void move_sg90(bool mode, uint32_t k)
       servo1.write(angle);
   }
   else
-    servo1.write(k);
+    servo1.write(to_angle);
 }
 
 String read_eeprom()
@@ -118,11 +118,20 @@ void PutToControl(uint32_t pin, uint32_t setup_mode, String target)
   }
   else if (setup_mode == 2) // digitalwrite
   {
-    if (target == "HIGH")
+    if (target == "HIGH" or target == "1")
+    {
       digitalWrite(pin, HIGH);
-    else if (target == "LOW")
+      server.send(200, "text/plain", "digitalWrite: HIGH\n");
+    }
+    else if (target == "LOW" or target == "0")
+    {
       digitalWrite(pin, LOW);
-    server.send(200, "text/plain", "digitalWrite " + target + "\n");
+      server.send(200, "text/plain", "digitalWrite; LOW\n");
+    }
+    else
+    {
+      handle_not_found();
+    }
   }
   else
   {
@@ -189,7 +198,7 @@ void PostToSetup(uint32_t pin, uint32_t setup_mode)
   {
     handle_not_found();
   }
-  if (setup_mode >= 1 && setup_mode <= 5)
+  if (setup_mode < 100) // 0-99はgpio statusとして保存
   {
     gpio_arr[pin] = setup_mode;
   }
@@ -279,7 +288,12 @@ void setup()
 {
   // EEPROM setup
   EEPROM.begin(1024); // 1kB     156byte=39*4
-
+  // read reflect
+  read_eeprom();
+  for (uint8_t i = 0; i < n; i++)
+  {
+    PostToSetup(i, gpio_arr[i]);
+  }
   // シリアルコンソールのセットアップ
   Serial.begin(9600);
   delay(100);

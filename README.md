@@ -2,20 +2,30 @@
 An arduino application for ESP32 to handle arduino GPIOs via REST API.
 
 # Features
-Until now, IoT systems have only communicated  `data`. 
+Until now, IoT systems have only communicated  `data`. RESTuino makes it possible to communicate `system functions` in the IoT.
 
-RESTuino makes it possible to communicate `system functions` in the IoT.
+It allows interactive programming via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer as well as serving as an IoT client!
+In this system, the arduino's GPIO is mainly manipulated by the REST API.
 
-It allows interactive programming via [`curl`](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer as well as serving as an IoT client!
+Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) and [IFTTT(webhooks)](https://ifttt.com/maker_webhooks), [Python(requests)](https://requests.readthedocs.io/en/latest/), etc. to operate.
 
 
-# Usage
-## build and upload
+# Requirements
+- ESP32-based board  
+    > The tested boards are as follows.
+    > - [ESP32 Dev Board](https://www.espressif.com/en/products/esp32-devkit)
+    > - [MH ET LIVE ESP32DevKIT](https://ja.aliexpress.com/item/32880702799.html?spm=a2g0s.8937460.0.0.72832e0edJMMVm&gatewayAdapt=glo2jpn)  
+
+    > Other products can also be used if they are equipped with esp32.
+
+- PlatformIO
+
+# Installation
 1. Clone the repository
     ```
     $ git clone https://github.com/takeyamayuki/RESTuino.git
     ```
-2. Define `ssid`, `password` of your wifi router by creating your own header file.
+2. Define `ssid`, `password` of your wifi router by changing `ssid_define.cpp`.
     ```sh
     $ cd RESTuino
     $ vi src/ssid_define.cpp
@@ -39,56 +49,57 @@ It allows interactive programming via [`curl`](https://github.com/curl/curl), [T
     upload_port = /dev/tty.wchusbserial529A0097081
     monitor_port = /dev/tty.wchusbserial529A0097081
     ```
-4. Install `ESP32Servo` on PlatformIO
 5. Build and upload using platformIO.
 6. Install this system wherever you like!  
 
 
-## URI
-### root
+# URI
+## root
 - http://(IP_address)   
     The IP address can be obtained via serial communication or `http://restuino.local` with a browser.
 
 - http://restuino.local
 
-### GPIO access
+## GPIO access
 
 - http://restuino.local/gpio(pin_number)     
     (pin_number) is the pin number of the GPIO.  For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
 
 
-## RESTful API
+# RESTful API
 > **Note**   
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
 
-### @`http://restuino.local/gpio(pin_number)`  
+## @`http://restuino.local/gpio(pin_number)`  
 Specify the target GPIO pin by URI. 
 
-1. Use `POST` to set the status of a pin in the same way as arduino.        
-    request body:  
-    - `digitalRead`
-    - `digitalWrite`
-    - `analogRead`
-    - `ledcWrite`
-    - `Servo`
-    - `(touch)`
-    - `(dacWrite)`
+### POST  
+Use `POST` to set the status of a pin in the same way as arduino.        
+request body:  
+- `digitalRead`  
+- `digitalWrite`  
+- `analogRead`
+- `ledcWrite`
+- `Servo`
+- `(touch)`
+- `(dacWrite)`
 
-    e.g. digtalWrite
-    ```sh
-    $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
-    ```
+e.g. digtalWrite
+```sh
+$ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
+```
 
-2. Use `PUT` to change the output value of any pin.
+### `PUT`  
+Use `PUT` to change or define the output value of any pin.
 - digitalWrite  
-    request body: `HIGH` or `LOW`  
+    request body: `HIGH` or `LOW` or `0` or `1`  
     available pins: 0-5, 12-19, 21-23, 25-27, 32-33.  
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
     ```
-- ledcWrite  
+- ledcWrite(alternative to `analogRead` in esp32)  
     request body: `0~256 numbers`  
     available pins: 0, 2, 4, 12-15, 25-27, 32, 33.  
     e.g.
@@ -105,9 +116,9 @@ Specify the target GPIO pin by URI.
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
     ```
 
-3. Use `GET` to get the status of any pin.  
-
-    Of course, the following information can also be obtained by opening any URI in a browser.
+### `GET`
+Use `GET` to get the status of any pin.  
+Of course, the following information can also be obtained by opening any URI in a browser.
 - analogRead  
     available pins: 0, 2, 4, 12-15, 25-27, 32-36, 39.  
     e.g.
@@ -130,40 +141,41 @@ Specify the target GPIO pin by URI.
     0
     ```
 
-4. Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
+### `DELETE`
+Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
 
-### @`http://restuino.local/`
+## @`http://restuino.local/`
 
-- `POST`  
-    request body: `save` or `reboot` or `reflect`
-    ```sh
-    $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|reflect'
-    ```
-    - `save`: Save the current GPIO setting status to EEPROM.   
-    - `reboot`: Reboot ESP32.
-    - `reflect`: Reflect GPIO settings stored in EEPROM.
+### `POST`  
+request body: `save` or `reboot` or `reflect`
+```sh
+$ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|reflect'
+```
+- `save`: Save the current GPIO setting status to EEPROM.   
+- `reboot`: Reboot ESP32.
+- `reflect`: Reflect GPIO settings stored in EEPROM.
 
-- `GET`  
-    Obtain IP address and GPIO status. GPIO status is output in chunks of 40. Starting from the first left digit, GPIO0, 1,2.... and its value is defined as follows.
-    ```sh
-    $ curl restuino.local/ -X GET
-    IP address: 192.168.3.20
-    GPIO status: 2000000050000005000000000000000000000000
-    ```
+### `GET`  
+Obtain IP address and GPIO status. GPIO status is output in chunks of 40. Starting from the first left digit, GPIO0, 1,2.... and its value is defined as follows.
+```sh
+$ curl restuino.local/ -X GET
+IP address: 192.168.3.20
+GPIO status: 2000000050000005000000000000000000000000
+```
 
-    |  number  |  meaning  |
-    | ---- | ---- |
-    |  0  |  nan  |
-    |  1  |  digitalread  |
-    |  2  |  digitalwrite  |
-    |  3  |  analogread  |
-    |  4  |  ledcwrite  |
-    |  5  |  servo  |
-    |  6  |  (touch)  |
-    |  7  |  (dacwrite)  |
+|  number  |  meaning  |
+| ---- | ---- |
+|  0  |  nan  |
+|  1  |  digitalread  |
+|  2  |  digitalwrite  |
+|  3  |  analogread  |
+|  4  |  ledcwrite  |
+|  5  |  servo  |
+|  6  |  (touch)  |
+|  7  |  (dacwrite)  |
 
-    e.g.   
-    Looking at the first digit of GPIO status(GPIO0), there is a number 2, which means `digitalwrite`. Therefore, `pinMode(0,OUTPUT)` is executed internally so that `GPIO0` becomes `digitalwrite`.
+e.g.   
+Looking at the first digit of GPIO status(GPIO0), there is a number 2, which means `digitalwrite`. Therefore, `pinMode(0,OUTPUT)` is executed internally so that `GPIO0` becomes `digitalwrite`.
 
 
 # tasks

@@ -4,3 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 .vscode/settings.json
+
+src/ssid_define.cpp
