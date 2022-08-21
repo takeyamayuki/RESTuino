@@ -7,49 +7,51 @@ Until now, IoT systems have only communicated  `data`. RESTuino makes it possibl
 It allows interactive programming via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer as well as serving as an IoT client!
 In this system, the arduino's GPIO is mainly manipulated by the REST API.
 
-Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) and [IFTTT(webhooks)](https://ifttt.com/maker_webhooks), [Python(requests)](https://requests.readthedocs.io/en/latest/), etc. to operate.
+Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) and [Homebridge](https://github.com/homebridge/homebridge), [Python(requests)](https://requests.readthedocs.io/en/latest/), etc. to operate.
 
 
 # Requirements
 - ESP32-based board  
-    > The tested boards are as follows.
-    > - [ESP32 Dev Board](https://www.espressif.com/en/products/esp32-devkit)
-    > - [MH ET LIVE ESP32DevKIT](https://ja.aliexpress.com/item/32880702799.html?spm=a2g0s.8937460.0.0.72832e0edJMMVm&gatewayAdapt=glo2jpn)  
 
-    > Other products can also be used if they are equipped with esp32.
+    The tested boards are as follows. Other products can also be used if they are equipped with esp32.  
+    - [ESP32 Dev Board](https://www.espressif.com/en/products/esp32-devkit)(recommended)  
+    - [MH ET LIVE ESP32DevKIT](https://ja.aliexpress.com/item/32880702799.html?spm=a2g0s.8937460.0.0.72832e0edJMMVm&gatewayAdapt=glo2jpn)    
 
 - PlatformIO
 
 # Installation
 1. Clone the repository
-    ```
+    ```sh
     $ git clone https://github.com/takeyamayuki/RESTuino.git
     ```
-2. Define `ssid`, `password` of your wifi router by changing `ssid_define.cpp`.
+2. Define `ssid`, `password` of your wifi router by changing [ssid_define.cpp](src/ssid_define.cpp).
     ```sh
     $ cd RESTuino
     $ vi src/ssid_define.cpp
     ``` 
-    Change `*ssid_def[]`, `*ssid_pass[]` to your wifi SSID, password and `len_ssid` to the number of ssid,password sets you defined.
+    Change `*ssid_def[]`, `*ssid_pass[]` to your wifi SSID, password and `len_ssid` to the number of ssid, password sets you defined.
     ```cpp 
     int len_ssid = 2;
     const char *ssid_def[] = {"your first SSID here", "your second SSID here"};
     const char *ssid_pass[] = {"your first password here", "your second password here"};
     ```
-3. Change `upload_port`, `monitor_port` in [platformio.ini](platformio.ini) to your own.
+
+4. Clear EEPROM.
     ```sh
-    $ ls /dev/tty.*
-    /dev/tty.BLTH       /dev/tty.usbmodem529A0097081
-    /dev/tty.Bluetooth-Incoming-Port	/dev/tty.wchusbserial529A0097081
-    $ cd ..
-    $ vi platformio.ini
+    # for esp32-devkit
+    $ pio run -e esp32dev-setup -t upload
+    # for MH ET LIVE ESP32DevKIT
+    $ pio run -e mhetesp-setup -t upload
     ```
 
-    ```platformio.ini
-    upload_port = /dev/tty.wchusbserial529A0097081
-    monitor_port = /dev/tty.wchusbserial529A0097081
+5. Build and upload [RESTuino](src).
+    ```sh
+    # for esp32-devkit
+    $ pio run -e esp32dev -t upload
+    # for MH ET LIVE ESP32DevKIT
+    $ pio run -e mhetesp -t upload
     ```
-5. Build and upload using platformIO.
+
 6. Install this system wherever you like!  
 
 
@@ -75,8 +77,9 @@ Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester]
 Specify the target GPIO pin by URI. 
 
 ### POST  
-Use `POST` to set the status of a pin in the same way as arduino.        
-request body:  
+Use `POST` to set the status of a pin in the same way as arduino.       
+
+Request body:  
 - `digitalRead`  
 - `digitalWrite`  
 - `analogRead`
@@ -90,37 +93,42 @@ e.g. digtalWrite
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
 ```
 
-### `PUT`  
+### PUT  
 Use `PUT` to change or define the output value of any pin.
-- digitalWrite  
-    request body: `HIGH` or `LOW` or `0` or `1`  
-    available pins: 0-5, 12-19, 21-23, 25-27, 32-33.  
+- digitalWrite
+
+    Request body: `HIGH` or `LOW` or `0` or `1`  
+    Available pins: 0-5, 12-19, 21-23, 25-27, 32-33.  
+
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
     ```
 - ledcWrite(alternative to `analogRead` in esp32)  
-    request body: `0~256 numbers`  
-    available pins: 0, 2, 4, 12-15, 25-27, 32, 33.  
+    Request body: `0~256 numbers`  
+    Available pins: 0, 2, 4, 12-15, 25-27, 32, 33. 
+
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '100'
     ```
 - Servo  
-    request body: `0~180 numbers` or `switch`
-    - 0~180 numbers: a servo motor moves to the angle specified by value.  
-    - 'switch': Each time the following command is sent, the servo motor moves back and forth between angle and angle0.  
+    Request body: `0~180 numbers` or `switch`
+    - `0~180 numbers`: a servo motor moves to the angle specified by value.  
+    - `switch`: Each time the following command is sent, the servo motor moves back and forth between angle and angle0.  
     
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
     ```
 
-### `GET`
+### GET
 Use `GET` to get the status of any pin.  
 Of course, the following information can also be obtained by opening any URI in a browser.
-- analogRead  
-    available pins: 0, 2, 4, 12-15, 25-27, 32-36, 39.  
+- analogRead
+
+    Available pins: 0, 2, 4, 12-15, 25-27, 32-36, 39.  
+
     e.g.
     ```sh
     $ curl restuino.local/gpio0 -X GET
@@ -128,13 +136,16 @@ Of course, the following information can also be obtained by opening any URI in 
     ```
 
 - digitalRead  
-    available pins: 1, 2, 4, 5, 7, 8, 12-19, 21-23, 25-27, 32-37.   
+
+    Available pins: 1, 2, 4, 5, 7, 8, 12-19, 21-23, 25-27, 32-37.   
+
     e.g.
     ```sh
     $ curl restuino.local/gpio1 -X GET
     0
     ```
-- Servo  
+- Servo
+
     e.g.
     ```sh
     $ curl restuino.local/gpio1 -X GET
@@ -147,7 +158,7 @@ Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restar
 ## @`http://restuino.local/`
 
 ### `POST`  
-request body: `save` or `reboot` or `reflect`
+Request body: `save` or `reboot` or `reflect`
 ```sh
 $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|reflect'
 ```

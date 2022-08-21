@@ -38,7 +38,7 @@ const uint32_t maxUs = 5000;
 const uint8_t angle = 60;
 const uint8_t angle0 = 5;
 
-uint32_t RequestToInt(String req)
+uint32_t RequestToNum(String req)
 {
   if (req == "digitalRead")
     return 1;
@@ -70,6 +70,7 @@ bool to0_flag()
 {
   // to0_flag
   int32_t status = servo1.read();
+  // return (status > (angle + angle0) / 2) ? true : false;
   if (status > (angle + angle0) / 2)
     return true; //現在angle側なので0に持っていく
   else if (status < (angle + angle0) / 2)
@@ -80,12 +81,7 @@ bool to0_flag()
 void move_sg90(bool mode, uint32_t to_angle)
 {
   if (mode)
-  {
-    if (to0_flag())
-      servo1.write(angle0);
-    else
-      servo1.write(angle);
-  }
+    to0_flag() ? servo1.write(angle0) : servo1.write(angle);
   else
     servo1.write(to_angle);
 }
@@ -225,7 +221,7 @@ void handle_root(void)
   // server.send(200, "text/plain", "Nice!!\n");
   if (server.method() == HTTP_POST)
   {
-    PostToSetup(0, RequestToInt(server.arg("plain")));
+    PostToSetup(0, RequestToNum(server.arg("plain")));
   }
 
   else if (server.method() == HTTP_GET)
@@ -252,7 +248,7 @@ void handle_gpio(int pin)
   if (server.method() == HTTP_POST)
   {
     String req = server.arg("plain"); // get request body
-    PostToSetup(pin, RequestToInt(req));
+    PostToSetup(pin, RequestToNum(req));
     message += req + "\n";
     server.send(200, "text/plain", message);
   }
