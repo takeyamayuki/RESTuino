@@ -8,10 +8,7 @@ headers = {"Content-Type": "text/plain; charset=utf-8"}
 
 def main():
     while(1):
-        response = requests.put(url, headers=headers, data="HIGH")
-        print(response.content)
-        time.sleep(1)
-        response = requests.put(url, headers=headers, data="LOW")
+        response = requests.put(url, headers=headers, data="switch")
         print(response.content)
         time.sleep(1)
 
