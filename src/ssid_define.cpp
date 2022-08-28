@@ -1,6 +1,9 @@
+#include <Arduino.h>
 //
 // ssid definition
 //
-int len_ssid = 2;
-const char *ssid_def[] = {"your first SSID here", "your second SSID here"};
-const char *ssid_pass[] = {"your first password here", "your second password here"};
+
+/*  change this */
+uint8_t len_ssid = 2;
+const char *ssid_def[] = {"ssid", "ssid"};
+const char *ssid_pass[] = {"pass", "pass"};

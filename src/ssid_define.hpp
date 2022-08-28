@@ -1,5 +1,5 @@
 #pragma once
 
-extern char *ssid_def[];
-extern char *ssid_pass[];
-extern int len_ssid;
+extern const uint8_t len_ssid;
+extern const char *ssid_def[];
+extern const char *ssid_pass[];
