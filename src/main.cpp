@@ -1,63 +1,67 @@
 #include <Arduino.h>
-
 #include <WiFi.h>
 #include <EEPROM.h>
 #include <ESPmDNS.h>
 #include <WebServer.h>
 #include <ESP32Servo.h>
-
 #include "ssid_define.hpp"
+
+namespace restuino
+{
+  enum gpio_status
+  {
+    nan = 0,
+    digitalread,
+    digitalwrite,
+    analogread,
+    ledcwrite,
+    servo,
+    touch,    /////////////////////////kore
+    dacwrite, ///////////////////////kore
+    save = 100,
+    reflect,
+    reboot,
+    not_found,
+  };
+}
+
+static const char *host_name = "restuino"; // RESTuino
+static const uint8_t n = 40;
+static uint8_t gpio_arr[n] = {}; //すべて0で初期化
+
+// Published values for SG90 servos; adjust if needed
+static const uint32_t minUs = 0;
+static const uint32_t maxUs = 5000;
+// 180 > angle > angle0 >= 0にすること
+static const uint8_t angle0 = 5;
+static const uint8_t angle = 60;
 
 WebServer server(80);
 
-const char *host_name = "restuino"; // RESTuino
-const uint32_t n = 40;
-uint32_t gpio_arr[n] = {}; //すべて0で初期化
-
-/* 各種アクション */
-const int _nan = 0;
-const int _digitalread = 1;
-const int _digitalwrite = 2;
-const int _analogread = 3;
-const int _ledcwrite = 4;
-const int _servo = 5;
-const int _touch = 6;    /////////////////////////kore
-const int _dacwrite = 7; ///////////////////////kore
-
-const int _save = 100;
-const int _reflect = 101;
-const int _reboot = 102;
-
-/* servo */
 Servo servo1;
-// Published values for SG90 servos; adjust if needed
-const uint8_t minUs = 0;
-const uint32_t maxUs = 5000;
-// bool to0_flag = false;
-// angle > angle0 >= 0にすること
-const uint8_t angle = 60;
-const uint8_t angle0 = 5;
 
-uint32_t RequestToNum(String req)
+uint8_t request_to_num(String req)
 {
-  if (req == "digitalRead")
-    return 1;
+  if (req == "nan")
+    return restuino::nan;
+  else if (req == "digitalRead")
+    return restuino::digitalread;
   else if (req == "digitalWrite")
-    return 2;
+    return restuino::digitalwrite;
   else if (req == "analogRead")
-    return 3;
+    return restuino::analogread;
   else if (req == "ledcWrite")
-    return 4;
+    return restuino::ledcwrite;
   else if (req == "Servo")
-    return 5;
+    return restuino::servo;
   else if (req == "save")
-    return 100;
+    return restuino::save;
   else if (req == "reflect")
-    return 101;
+    return restuino::reflect;
   else if (req == "reboot")
-    return 102;
+    return restuino::reboot;
   else
-    return 0; // nan
+    return restuino::not_found;
 }
 
 void handle_not_found(void)
@@ -65,16 +69,10 @@ void handle_not_found(void)
   server.send(404, "text/plain", "Not Found.\n");
 }
 
-// to0_flag check
+// to0 flag check
 bool to0_flag()
 {
-  // to0_flag
-  int32_t status = servo1.read();
-  // return (status > (angle + angle0) / 2) ? true : false;
-  if (status > (angle + angle0) / 2)
-    return true; //現在angle側なので0に持っていく
-  else if (status < (angle + angle0) / 2)
-    return false; //現在angle0側なので30に持っていく
+  return (servo1.read() > (angle + angle0) / 2) ? true : false;
 }
 
 // mode=true:angle0,angleのスイッチ, mode=false:自由角度への移動
@@ -89,7 +87,7 @@ void move_sg90(bool mode, uint32_t to_angle)
 String read_eeprom()
 {
   String mes;
-  for (uint32_t i = 0; i < n; i++) // GPIO:0-39
+  for (uint8_t i = 0; i < n; i++) // GPIO:0-39
   {
     EEPROM.get(i * 4, gpio_arr[i]); // rom_ad=i*4
     mes += String(gpio_arr[i]);
@@ -97,23 +95,24 @@ String read_eeprom()
   return mes;
 }
 
-void PutToControl(uint32_t pin, uint32_t setup_mode, String target)
+void put_to_control(uint8_t pin, String target)
 {
-  if (setup_mode == 5) // servo
+  switch (gpio_arr[pin])
   {
+  case restuino::servo:
     if (target == "switch")
       move_sg90(true, 0);
     else
       move_sg90(false, target.toInt());
     server.send(200, "text/plain", "servo.write " + target + "\n"); //リクエストされた角度を返す
-  }
-  else if (setup_mode == 4) // ledcwrite
-  {
+    break;
+  
+  case restuino::ledcwrite:
     ledcWrite(0, target.toInt());
     server.send(200, "text/plain", "dledcWrite " + target + "\n");
-  }
-  else if (setup_mode == 2) // digitalwrite
-  {
+    break;
+  
+  case restuino::digitalwrite:
     if (target == "HIGH" or target == "1")
     {
       digitalWrite(pin, HIGH);
@@ -128,72 +127,81 @@ void PutToControl(uint32_t pin, uint32_t setup_mode, String target)
     {
       handle_not_found();
     }
-  }
-  else
-  {
+    break;
+  
+  default:
     handle_not_found();
+    break;
   }
 }
 
-void PostToSetup(uint32_t pin, uint32_t setup_mode)
+void post_to_setup(uint8_t pin, uint8_t setup_mode)
 {
-  if (setup_mode == 5) // servo
+  switch (setup_mode)
   {
+  case restuino::servo:
     servo1.setPeriodHertz(50); // Standard 50hz servo
     servo1.attach(pin, minUs, maxUs);
-  }
+    server.send(200, "text/plain", "Servo");
+    break;
+
   // ledcWrite enable pin
   // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33
-  else if (setup_mode == 4) // ledcwrite
-  {
+  case restuino::ledcwrite:
     ledcSetup(0, 12800, 8);
     ledcAttachPin(pin, 0);
-  }
+    server.send(200, "text/plain", "ledcWrite");
+    break;
+
   // digitalWrite enable pin
   // 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
-  else if (setup_mode == 2) // digitalwrite
-  {
+  case restuino::digitalwrite:
     pinMode(pin, OUTPUT);
-  }
+    server.send(200, "text/plain", "digitalWrite");
+    break;
+
   // digitalRead enable pin
   // 1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
-  else if (setup_mode == 1) // digitalread
-  {
+  case restuino::digitalread:
     pinMode(pin, INPUT);
-  }
+    server.send(200, "text/plain", "digitalRead");
+    break;
+  
   // analogRead anable pin
   // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39
-  else if (setup_mode == 3) // analogread
-  {
+  case restuino::analogread:
     pinMode(pin, INPUT);
-  }
-  else if (setup_mode == 102) // reboot //root
-  {
+    server.send(200, "text/plain", "analogRead");
+    break;
+
+  case restuino::reboot:
     server.send(200, "text/plain", "Rebooting...\n");
     ESP.restart();
-  }
-  else if (setup_mode == 100) // save //root
-  {
-    for (int i = 0; i < n; i++)
+    break;
+
+  case restuino::save:
+    for (uint8_t i = 0; i < n; i++)
     {
       EEPROM.put(i * 4, gpio_arr[i]); // address=i*4
     }
     EEPROM.commit();
     server.send(200, "text/plain", "EEPROM write\n");
-  }
-  else if (setup_mode == 101) // reflect //root
-  {
+    break;
+
+  case restuino::reflect:
     read_eeprom();
-    for (uint32_t i = 0; i < n; i++)
+    for (uint8_t i = 0; i < n; i++)
     {
-      PostToSetup(i, gpio_arr[i]);
+      post_to_setup(i, gpio_arr[i]);
     }
     server.send(200, "text/plain", "EEPROM read & reflect\n");
-  }
-  else if (setup_mode != 0)
-  {
+    break;
+
+  case restuino::not_found:
     handle_not_found();
+    break;
   }
+
   if (setup_mode < 100) // 0-99はgpio statusとして保存
   {
     gpio_arr[pin] = setup_mode;
@@ -201,7 +209,7 @@ void PostToSetup(uint32_t pin, uint32_t setup_mode)
 }
 
 // WiFi.localIP()->IP
-String ipToString(uint32_t ip)
+String ip_to_String(uint32_t ip)
 {
   String result = "";
 
@@ -218,17 +226,16 @@ String ipToString(uint32_t ip)
 
 void handle_root(void)
 {
-  // server.send(200, "text/plain", "Nice!!\n");
   if (server.method() == HTTP_POST)
   {
-    PostToSetup(0, RequestToNum(server.arg("plain")));
+    post_to_setup(0, request_to_num(server.arg("plain")));
   }
 
   else if (server.method() == HTTP_GET)
   {
     String mes;
     mes += "IP address: ";
-    mes += ipToString(WiFi.localIP());
+    mes += ip_to_String(WiFi.localIP());
     mes += "\n";
     mes += "GPIO status: ";
     mes += read_eeprom();
@@ -241,41 +248,39 @@ void handle_root(void)
 // すべてのGPIOを制御
 void handle_gpio(int pin)
 {
-  uint32_t rom_ad = pin * 4;
-  String message;
   /* POST ペリフェラル初期設定 */
   // request body = servoだったら, servoの設定 & pin*4のアドレスのEEPROMに0(servo)を格納
   if (server.method() == HTTP_POST)
   {
     String req = server.arg("plain"); // get request body
-    PostToSetup(pin, RequestToNum(req));
-    message += req + "\n";
-    server.send(200, "text/plain", message);
+    post_to_setup(pin, request_to_num(req));
   }
   /* PUT 更新 */
   else if (server.method() == HTTP_PUT)
   {
-    PutToControl(pin, gpio_arr[pin], server.arg("plain"));
+    put_to_control(pin, server.arg("plain"));
   }
 
   /* GET 情報取得 */
   else if (server.method() == HTTP_GET)
   {
-    if (gpio_arr[pin] == 5) // servo
+    switch (gpio_arr[pin])
     {
+    case restuino::servo:
       server.send(200, "text/plain", String(servo1.read()) + "\n"); // statusをクライアントに返す
-    }
-    else if (gpio_arr[pin] == 1) // digitalread
-    {
+      break;
+
+    case restuino::digitalread:
       server.send(200, "text/plain", String(digitalRead(pin)) + "\n");
-    }
-    else if (gpio_arr[pin] == 3) // analogread
-    {
+      break;
+    
+    case restuino::analogread:
       server.send(200, "text/plain", String(analogRead(pin)) + "\n");
-    }
-    else
-    {
+      break;
+    
+    default:
       handle_not_found();
+      break;
     }
   }
 }
@@ -288,14 +293,14 @@ void setup()
   read_eeprom();
   for (uint8_t i = 0; i < n; i++)
   {
-    PostToSetup(i, gpio_arr[i]);
+    post_to_setup(i, gpio_arr[i]);
   }
   // シリアルコンソールのセットアップ
   Serial.begin(9600);
   delay(100);
 
   // WiFiに接続
-  for (int i = 0; i < len_ssid; i++)
+  for (uint8_t i = 0; i < len_ssid; i++)
   {
     Serial.print("Connecting to ");
     Serial.print(ssid_def[i]);
