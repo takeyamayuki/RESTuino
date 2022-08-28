@@ -12,7 +12,7 @@ Until now, IoT systems have only communicated *data*. RESTuino makes it possible
 
 `RESTuino` allows us to make the following: 
 - `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
-- `IoT client`. In this system, the arduino's GPIO is manipulated by the REST API.
+- `IoT client` In this system, the arduino's GPIO is manipulated by the REST API.
 
 `RESTuino` can be operated with
 - [curl](https://github.com/curl/curl)
@@ -85,7 +85,8 @@ or similer.
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
 
-## @`http://restuino.local/gpio(pin_number)`  
+## @http://restuino.local/gpio(pin_number)
+
 Specify the target GPIO pin by URI. 
 
 ### POST  
@@ -100,7 +101,7 @@ Request body:
 - `(touch)`
 - `(dacWrite)`
 
-e.g. digtalWrite
+e.g. digitalWrite
 ```sh
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
 ```
@@ -116,7 +117,8 @@ Use `PUT` to change or define the output value of any pin.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
     ```
-- ledcWrite(alternative to `analogRead` in esp32)  
+- ledcWrite(alternative to `analogWrite` in esp32)  
+
     Request body: `0~256 numbers`  
     Available pins: 0, 2, 4, 12-15, 25-27, 32, 33. 
 
@@ -126,6 +128,7 @@ Use `PUT` to change or define the output value of any pin.
     ```
 - Servo  
     Request body: `0~180 numbers` or `switch`
+
     - `0~180 numbers`: a servo motor moves to the angle specified by value.  
     - `switch`: Each time the following command is sent, the servo motor moves back and forth between angle and angle0.  
     
@@ -164,12 +167,12 @@ Of course, the following information can also be obtained by opening any URI in 
     0
     ```
 
-### `DELETE`
+### DELETE
 Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
 
-## @`http://restuino.local/`
+## @http://restuino.local/
 
-### `POST`  
+### POST  
 Request body: `save` or `reboot` or `reflect`
 ```sh
 $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|reflect'
@@ -178,7 +181,7 @@ $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|ref
 - `reboot`: Reboot ESP32.
 - `reflect`: Reflect GPIO settings stored in EEPROM.
 
-### `GET`  
+### GET  
 Obtain IP address and GPIO status. GPIO status is output in chunks of 40. Starting from the first left digit, GPIO0, 1,2.... and its value is defined as follows.
 ```sh
 $ curl restuino.local/ -X GET
@@ -199,6 +202,28 @@ GPIO status: 2000000050000005000000000000000000000000
 
 e.g.   
 Looking at the first digit of GPIO status(GPIO0), there is a number 2, which means `digitalwrite`. Therefore, `pinMode(0,OUTPUT)` is executed internally so that `GPIO0` becomes `digitalwrite`.
+
+# Examples
+See [example](example/).
+1. Run setup.py
+    ```sh
+    $ python setup.py
+    ```
+    Configure GPIO settings. Run it only once.
+
+2. Run main.py
+    ```sh
+    $ python main.py
+    ```
+    This is the main program. Use only this program when incorporating it.
+
+- [L-chika](example/L-chika/)
+
+    Programs to turn on/off the LED connected to GPIO15 every second.
+
+- [Servo-switch](example/Servo-switch/)
+
+    Programs to move the servo to the angle defined by `angle`, `angle0` every second.
 
 
 # Tasks
