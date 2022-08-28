@@ -1,20 +1,32 @@
-# RESTuino
-An arduino application for ESP32 to handle arduino GPIOs via REST API.
+<h1 align="center">
+   RESTuino
+</h1>
+
+<div align="center">
+   A firmware for ESP32 to handle arduino GPIOs via REST API  
+</div>
+
 
 # Features
-Until now, IoT systems have only communicated  `data`. RESTuino makes it possible to communicate `system functions` in the IoT.
+Until now, IoT systems have only communicated *data*. RESTuino makes it possible to communicate *system functions* in the IoT.
 
-It allows interactive programming via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer as well as serving as an IoT client!
-In this system, the arduino's GPIO is mainly manipulated by the REST API.
+`RESTuino` allows us to make the following: 
+- `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
+- `IoT client`. In this system, the arduino's GPIO is manipulated by the REST API.
 
-Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) and [Homebridge](https://github.com/homebridge/homebridge), [Python(requests)](https://requests.readthedocs.io/en/latest/), etc. to operate.
+`RESTuino` can be operated with
+- [curl](https://github.com/curl/curl)
+- [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja)
+- [Homebridge](https://github.com/homebridge/homebridge)
+- [Python(requests)](https://requests.readthedocs.io/en/latest/)  
+or similer.
 
 
 # Requirements
 - ESP32-based board  
 
     The tested boards are as follows. Other products can also be used if they are equipped with esp32.  
-    - [ESP32 Dev Board](https://www.espressif.com/en/products/esp32-devkit)(recommended)  
+    - [ESP32 DevKitC](https://www.espressif.com/en/products/devkits/esp32-devkitc) 
     - [MH ET LIVE ESP32DevKIT](https://ja.aliexpress.com/item/32880702799.html?spm=a2g0s.8937460.0.0.72832e0edJMMVm&gatewayAdapt=glo2jpn)    
 
 - PlatformIO
@@ -31,7 +43,7 @@ Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester]
     ``` 
     Change `*ssid_def[]`, `*ssid_pass[]` to your wifi SSID, password and `len_ssid` to the number of ssid, password sets you defined.
     ```cpp 
-    int len_ssid = 2;
+    uint8_t len_ssid = 2;
     const char *ssid_def[] = {"your first SSID here", "your second SSID here"};
     const char *ssid_pass[] = {"your first password here", "your second password here"};
     ```
@@ -58,7 +70,7 @@ Use the aforementioned [curl](https://github.com/curl/curl), [Talend API Tester]
 # URI
 ## root
 - http://(IP_address)   
-    The IP address can be obtained via serial communication or `http://restuino.local` with a browser.
+    The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method.
 
 - http://restuino.local
 
@@ -189,7 +201,7 @@ e.g.
 Looking at the first digit of GPIO status(GPIO0), there is a number 2, which means `digitalwrite`. Therefore, `pinMode(0,OUTPUT)` is executed internally so that `GPIO0` becomes `digitalwrite`.
 
 
-# tasks
+# Tasks
 - [x] digitalread  
 - [ ] pullupread  
 - [x] digitalwrite PUT  
@@ -203,3 +215,7 @@ Looking at the first digit of GPIO status(GPIO0), there is a number 2, which mea
 - [x] eeprom load of settings   
 - [x] Apply settings saved in eeprom   
 - [ ] Multiple servo, multiple ledcwrite   
+
+# Contribution
+There are no specific guidelines for contributions, so please feel free to send me pull requests and issues.
+
