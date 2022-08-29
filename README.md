@@ -8,11 +8,12 @@
 
 
 # Features
-Until now, IoT systems have only communicated *data*. RESTuino makes it possible to communicate *system functions* in the IoT.
+`RESTuino` makes it possible to communicate *system functions* in the IoT.
 
 `RESTuino` allows us to make the following: 
-- `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
 - `IoT client` In this system, the arduino's GPIO is manipulated by the REST API.
+- `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
+
 
 `RESTuino` can be operated with
 - [curl](https://github.com/curl/curl)
