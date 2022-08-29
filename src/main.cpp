@@ -40,7 +40,7 @@ WebServer server(80);
 
 Servo servo1;
 
-uint8_t request_to_num(String req)
+enum restuino::gpio_status request_to_num(String req)
 {
   if (req == "nan")
     return restuino::nan;
@@ -97,6 +97,8 @@ String read_eeprom()
 
 void put_to_control(uint8_t pin, String target)
 {
+  Serial.println(gpio_arr[pin]);
+  // Serial.println(restuino::digitalwrite);
   switch (gpio_arr[pin])
   {
   case restuino::servo:
@@ -137,11 +139,13 @@ void put_to_control(uint8_t pin, String target)
 
 void post_to_setup(uint8_t pin, uint8_t setup_mode)
 {
+  Serial.print(setup_mode);
   switch (setup_mode)
   {
   case restuino::servo:
     servo1.setPeriodHertz(50); // Standard 50hz servo
     servo1.attach(pin, minUs, maxUs);
+    gpio_arr[pin] = setup_mode;      // 0-99はgpio statusとして保存
     server.send(200, "text/plain", "Servo");
     break;
 
@@ -150,6 +154,7 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
   case restuino::ledcwrite:
     ledcSetup(0, 12800, 8);
     ledcAttachPin(pin, 0);
+    gpio_arr[pin] = setup_mode;
     server.send(200, "text/plain", "ledcWrite");
     break;
 
@@ -157,6 +162,7 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
   // 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
   case restuino::digitalwrite:
     pinMode(pin, OUTPUT);
+    gpio_arr[pin] = setup_mode;
     server.send(200, "text/plain", "digitalWrite");
     break;
 
@@ -164,6 +170,7 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
   // 1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
   case restuino::digitalread:
     pinMode(pin, INPUT);
+    gpio_arr[pin] = setup_mode;
     server.send(200, "text/plain", "digitalRead");
     break;
   
@@ -171,6 +178,7 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
   // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39
   case restuino::analogread:
     pinMode(pin, INPUT);
+    gpio_arr[pin] = setup_mode;
     server.send(200, "text/plain", "analogRead");
     break;
 
@@ -189,7 +197,7 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
     break;
 
   case restuino::reflect:
-    read_eeprom();
+    // read_eeprom();
     for (uint8_t i = 0; i < n; i++)
     {
       post_to_setup(i, gpio_arr[i]);
@@ -200,11 +208,6 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
   case restuino::not_found:
     handle_not_found();
     break;
-  }
-
-  if (setup_mode < 100) // 0-99はgpio statusとして保存
-  {
-    gpio_arr[pin] = setup_mode;
   }
 }
 
@@ -228,7 +231,7 @@ void handle_root(void)
 {
   if (server.method() == HTTP_POST)
   {
-    post_to_setup(0, request_to_num(server.arg("plain")));
+    post_to_setup(0, (uint8_t)request_to_num(server.arg("plain")));
   }
 
   else if (server.method() == HTTP_GET)
@@ -238,7 +241,11 @@ void handle_root(void)
     mes += ip_to_String(WiFi.localIP());
     mes += "\n";
     mes += "GPIO status: ";
-    mes += read_eeprom();
+    // mes += read_eeprom();
+    for (uint8_t i = 0; i < n; i++) // GPIO:0-39
+    {
+      mes += String(gpio_arr[i]);
+    }
     mes += "\n";
     server.send(200, "text/plain", mes);
     // pinに反映させる
@@ -253,7 +260,7 @@ void handle_gpio(int pin)
   if (server.method() == HTTP_POST)
   {
     String req = server.arg("plain"); // get request body
-    post_to_setup(pin, request_to_num(req));
+    post_to_setup(pin, (uint8_t)request_to_num(req));
   }
   /* PUT 更新 */
   else if (server.method() == HTTP_PUT)
