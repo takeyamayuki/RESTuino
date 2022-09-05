@@ -3,7 +3,7 @@
 </h1>
 
 <div align="center">
-   A firmware for ESP32 to handle arduino GPIOs via REST API  
+   A firmware for ESP32 to handle arduino GPIO via REST API  
 </div>
 
 
@@ -68,29 +68,31 @@ or similer.
 6. Install this system wherever you like!  
 
 
-# URI
-## root
+
+# RESTful API
+
+> **Note**   
+> When sending the request body, always specify `Content-Type: text/plain` as the header.
+
+## URI
+### root
 - http://(IP_address)   
     The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method.
 
 - http://restuino.local
 
-## GPIO access
+### GPIO access
 
 - http://restuino.local/gpio(pin_number)     
     (pin_number) is the pin number of the GPIO.  For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
 
+## Method
 
-# RESTful API
-> **Note**   
-> When sending the request body, always specify `Content-Type: text/plain` as the header.
-
-
-## @http://restuino.local/gpio(pin_number)
+### @http://restuino.local/gpio(pin_number)
 
 Specify the target GPIO pin by URI. 
 
-### POST  
+**POST**  
 Use `POST` to set the status of a pin in the same way as arduino.       
 
 Request body:  
@@ -107,12 +109,12 @@ e.g. digitalWrite
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
 ```
 
-### PUT  
+**PUT**
+
 Use `PUT` to change or define the output value of any pin.
 - digitalWrite
 
     Request body: `HIGH` or `LOW` or `0` or `1`  
-    Available pins: 0-5, 12-19, 21-23, 25-27, 32-33.  
 
     e.g.
     ```sh
@@ -121,7 +123,6 @@ Use `PUT` to change or define the output value of any pin.
 - ledcWrite(alternative to `analogWrite` in esp32)  
 
     Request body: `0~256 numbers`  
-    Available pins: 0, 2, 4, 12-15, 25-27, 32, 33. 
 
     e.g.
     ```sh
@@ -138,12 +139,11 @@ Use `PUT` to change or define the output value of any pin.
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
     ```
 
-### GET
+**GET**
+
 Use `GET` to get the status of any pin.  
 Of course, the following information can also be obtained by opening any URI in a browser.
 - analogRead
-
-    Available pins: 0, 2, 4, 12-15, 25-27, 32-36, 39.  
 
     e.g.
     ```sh
@@ -152,8 +152,6 @@ Of course, the following information can also be obtained by opening any URI in 
     ```
 
 - digitalRead  
-
-    Available pins: 1, 2, 4, 5, 7, 8, 12-19, 21-23, 25-27, 32-37.   
 
     e.g.
     ```sh
@@ -168,12 +166,14 @@ Of course, the following information can also be obtained by opening any URI in 
     0
     ```
 
-### DELETE
+**DELETE**
+(Not implemented yet)
 Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
 
 ## @http://restuino.local/
 
-### POST  
+**PUT**  
+
 Request body: `save` or `reboot` or `reflect`
 ```sh
 $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|reflect'
@@ -182,12 +182,20 @@ $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|ref
 - `reboot`: Reboot ESP32.
 - `reflect`: Reflect GPIO settings stored in EEPROM.
 
-### GET  
+e.g.
+```sh
+$ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save'
+```
+
+**GET**
+
 Obtain IP address and GPIO status. GPIO status is output in chunks of 40. Starting from the first left digit, GPIO0, 1,2.... and its value is defined as follows.
 ```sh
 $ curl restuino.local/ -X GET
-IP address: 192.168.3.20
-GPIO status: 2000000050000005000000000000000000000000
+{
+  "IP address": "192.168.0.29",
+  "GPIO status": "2000000050000002200000000000000000000000"
+}
 ```
 
 |  number  |  meaning  |
