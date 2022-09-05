@@ -4,6 +4,7 @@
 #include <ESPmDNS.h>
 #include <WebServer.h>
 #include <ESP32Servo.h>
+#include <ArduinoJson.h>
 #include "ssid_define.hpp"
 
 namespace restuino
@@ -66,7 +67,7 @@ enum restuino::gpio_status request_to_num(String req)
 
 void handle_not_found(void)
 {
-  server.send(404, "text/plain", "Not Found.\n");
+  server.send(404, "text/plain", "Not Found.\r\n");
 }
 
 // to0 flag check
@@ -95,7 +96,7 @@ String read_eeprom()
   return mes;
 }
 
-void put_to_control(uint8_t pin, String target)
+bool put_to_control(uint8_t pin, String target)
 {
   Serial.println(gpio_arr[pin]);
   // Serial.println(restuino::digitalwrite);
@@ -103,87 +104,94 @@ void put_to_control(uint8_t pin, String target)
   {
   case restuino::servo:
     if (target == "switch")
+    {
       move_sg90(true, 0);
+      return true;
+    }
     else
+    {
       move_sg90(false, target.toInt());
-    server.send(200, "text/plain", "servo.write " + target + "\n"); //リクエストされた角度を返す
+      return true;
+    }
     break;
-  
+
   case restuino::ledcwrite:
     ledcWrite(0, target.toInt());
-    server.send(200, "text/plain", "dledcWrite " + target + "\n");
+    return true;
     break;
-  
+
   case restuino::digitalwrite:
     if (target == "HIGH" or target == "1")
     {
       digitalWrite(pin, HIGH);
-      server.send(200, "text/plain", "digitalWrite: HIGH\n");
+      return true;
     }
     else if (target == "LOW" or target == "0")
     {
       digitalWrite(pin, LOW);
-      server.send(200, "text/plain", "digitalWrite; LOW\n");
+      return true;
     }
     else
     {
-      handle_not_found();
+      return false;
     }
     break;
-  
+
   default:
-    handle_not_found();
+    return false;
     break;
   }
 }
 
-void post_to_setup(uint8_t pin, uint8_t setup_mode)
+bool post_to_setup_gpio(uint8_t pin, uint8_t setup_mode)
 {
-  Serial.print(setup_mode);
+  Serial.println(setup_mode);
   switch (setup_mode)
   {
   case restuino::servo:
     servo1.setPeriodHertz(50); // Standard 50hz servo
     servo1.attach(pin, minUs, maxUs);
-    gpio_arr[pin] = setup_mode;      // 0-99はgpio statusとして保存
-    server.send(200, "text/plain", "Servo");
+    gpio_arr[pin] = setup_mode; // 0-99はgpio statusとして保存
+    return true;
     break;
 
-  // ledcWrite enable pin
-  // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33
   case restuino::ledcwrite:
     ledcSetup(0, 12800, 8);
     ledcAttachPin(pin, 0);
     gpio_arr[pin] = setup_mode;
-    server.send(200, "text/plain", "ledcWrite");
+    return true;
     break;
 
-  // digitalWrite enable pin
-  // 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33
   case restuino::digitalwrite:
     pinMode(pin, OUTPUT);
     gpio_arr[pin] = setup_mode;
-    server.send(200, "text/plain", "digitalWrite");
+    return true;
     break;
 
-  // digitalRead enable pin
-  // 1, 2, 4, 5, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, 33, 34, 35, 36, 37
   case restuino::digitalread:
     pinMode(pin, INPUT);
     gpio_arr[pin] = setup_mode;
-    server.send(200, "text/plain", "digitalRead");
+    return true;
     break;
-  
-  // analogRead anable pin
-  // 0, 2, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39
+
   case restuino::analogread:
     pinMode(pin, INPUT);
     gpio_arr[pin] = setup_mode;
-    server.send(200, "text/plain", "analogRead");
+    return true;
     break;
 
+  default:
+    return false;
+    break;
+  }
+}
+
+bool put_to_setup_root(uint8_t pin, uint8_t setup_mode)
+{
+  switch (setup_mode)
+  {
   case restuino::reboot:
-    server.send(200, "text/plain", "Rebooting...\n");
+    server.send(200, "text/plain", "Rebooting...\r\n");
     ESP.restart();
     break;
 
@@ -193,16 +201,16 @@ void post_to_setup(uint8_t pin, uint8_t setup_mode)
       EEPROM.put(i * 4, gpio_arr[i]); // address=i*4
     }
     EEPROM.commit();
-    server.send(200, "text/plain", "EEPROM write\n");
+    server.send(200, "text/plain", "EEPROM write\r\n");
     break;
 
   case restuino::reflect:
     // read_eeprom();
     for (uint8_t i = 0; i < n; i++)
     {
-      post_to_setup(i, gpio_arr[i]);
+      post_to_setup_gpio(i, gpio_arr[i]); // server.send含まないこと
     }
-    server.send(200, "text/plain", "EEPROM read & reflect\n");
+    server.send(200, "text/plain", "EEPROM read & reflect\r\n");
     break;
 
   case restuino::not_found:
@@ -229,25 +237,23 @@ String ip_to_String(uint32_t ip)
 
 void handle_root(void)
 {
-  if (server.method() == HTTP_POST)
-  {
-    post_to_setup(0, (uint8_t)request_to_num(server.arg("plain")));
-  }
+  if (server.method() == HTTP_PUT)
+    put_to_setup_root(0, (uint8_t)request_to_num(server.arg("plain")));
 
   else if (server.method() == HTTP_GET)
   {
-    String mes;
-    mes += "IP address: ";
-    mes += ip_to_String(WiFi.localIP());
-    mes += "\n";
-    mes += "GPIO status: ";
-    // mes += read_eeprom();
+    String mes = "";
+    StaticJsonDocument<500> doc;
+    doc["IP address"] = ip_to_String(WiFi.localIP());
+    // JsonArray GPIOstatus = doc.createNestedArray("GPIOstatus");
     for (uint8_t i = 0; i < n; i++) // GPIO:0-39
     {
       mes += String(gpio_arr[i]);
     }
-    mes += "\n";
-    server.send(200, "text/plain", mes);
+    doc["GPIO status"] = mes;
+    char json_buf[500];
+    serializeJsonPretty(doc, json_buf, 500);
+    server.send(200, "application/json", json_buf);
     // pinに反映させる
   }
 }
@@ -256,16 +262,22 @@ void handle_root(void)
 void handle_gpio(int pin)
 {
   /* POST ペリフェラル初期設定 */
-  // request body = servoだったら, servoの設定 & pin*4のアドレスのEEPROMに0(servo)を格納
   if (server.method() == HTTP_POST)
   {
-    String req = server.arg("plain"); // get request body
-    post_to_setup(pin, (uint8_t)request_to_num(req));
+    if (post_to_setup_gpio(0, (uint8_t)request_to_num(server.arg("plain"))))
+      server.send(200, "text/plain", server.arg("plain") + "\r\n");
+
+    else
+      handle_not_found();
   }
   /* PUT 更新 */
   else if (server.method() == HTTP_PUT)
   {
-    put_to_control(pin, server.arg("plain"));
+    if (put_to_control(pin, server.arg("plain")))
+      server.send(200, "text/plain", server.arg("plain") + "\r\n");
+
+    else
+      handle_not_found();
   }
 
   /* GET 情報取得 */
@@ -274,17 +286,17 @@ void handle_gpio(int pin)
     switch (gpio_arr[pin])
     {
     case restuino::servo:
-      server.send(200, "text/plain", String(servo1.read()) + "\n"); // statusをクライアントに返す
+      server.send(200, "text/plain", String(servo1.read()) + "\r\n"); // statusをクライアントに返す
       break;
 
     case restuino::digitalread:
-      server.send(200, "text/plain", String(digitalRead(pin)) + "\n");
+      server.send(200, "text/plain", String(digitalRead(pin)) + "\r\n");
       break;
-    
+
     case restuino::analogread:
-      server.send(200, "text/plain", String(analogRead(pin)) + "\n");
+      server.send(200, "text/plain", String(analogRead(pin)) + "\r\n");
       break;
-    
+
     default:
       handle_not_found();
       break;
@@ -300,7 +312,7 @@ void setup()
   read_eeprom();
   for (uint8_t i = 0; i < n; i++)
   {
-    post_to_setup(i, gpio_arr[i]);
+    post_to_setup_gpio(i, gpio_arr[i]);
   }
   // シリアルコンソールのセットアップ
   Serial.begin(9600);
