@@ -33,7 +33,7 @@ or similer.
 - PlatformIO
 
 # Installation
-1. Clone the repository
+1. Clone this repository.
     ```sh
     $ git clone https://github.com/takeyamayuki/RESTuino.git
     ```
@@ -45,25 +45,34 @@ or similer.
     Change `*ssid_def[]`, `*ssid_pass[]` to your wifi SSID, password and `len_ssid` to the number of ssid, password sets you defined.
     ```cpp 
     uint8_t len_ssid = 2;
-    const char *ssid_def[] = {"your first SSID here", "your second SSID here"};
-    const char *ssid_pass[] = {"your first password here", "your second password here"};
+    const char *ssid_def[] = {"ssid1", "ssid2"};
+    const char *ssid_pass[] = {"pass1", "pass2"};
     ```
-
+<!-- 
 4. Clear EEPROM.
     ```sh
     # for esp32-devkit
     $ pio run -e esp32dev-setup -t upload
     # for MH ET LIVE ESP32DevKIT
     $ pio run -e mhetesp-setup -t upload
-    ```
+    ``` -->
 
-5. Build and upload [RESTuino](src).
+3. Build and upload [RESTuino](src).
     ```sh
     # for esp32-devkit
     $ pio run -e esp32dev -t upload
     # for MH ET LIVE ESP32DevKIT
     $ pio run -e mhetesp -t upload
     ```
+
+4. Clear EEPROM.
+
+    Initialize the RESTuino system when you see `WiFi connected.` on the serial monitor.
+    
+    ```sh
+    $ curl restuino.local/ -X DELETE  
+    Change all pins to nan status...  
+    ```  
 
 6. Install this system wherever you like!  
 
@@ -92,7 +101,7 @@ or similer.
 
 Specify the target GPIO pin by URI. 
 
-**POST**  
+#### POST 
 Use `POST` to set the status of a pin in the same way as arduino.       
 
 Request body:  
@@ -109,7 +118,7 @@ e.g. digitalWrite
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
 ```
 
-**PUT**
+#### PUT
 
 Use `PUT` to change or define the output value of any pin.
 - digitalWrite
@@ -139,7 +148,7 @@ Use `PUT` to change or define the output value of any pin.
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
     ```
 
-**GET**
+#### GET
 
 Use `GET` to get the status of any pin.  
 Of course, the following information can also be obtained by opening any URI in a browser.
@@ -166,13 +175,19 @@ Of course, the following information can also be obtained by opening any URI in 
     0
     ```
 
-**DELETE**
-(Not implemented yet)
+#### DELETE
+
 Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
+e.g.
+```sh
+$ curl restuino.local/gpio1 -X DELETE
+Transition to nan state...
+```
 
-## @http://restuino.local/
 
-**PUT**  
+### @http://restuino.local/
+
+#### PUT
 
 Request body: `save` or `reboot` or `reflect`
 ```sh
@@ -187,7 +202,7 @@ e.g.
 $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save'
 ```
 
-**GET**
+#### GET
 
 Obtain IP address and GPIO status. GPIO status is output in chunks of 40. Starting from the first left digit, GPIO0, 1,2.... and its value is defined as follows.
 ```sh
@@ -211,6 +226,19 @@ $ curl restuino.local/ -X GET
 
 e.g.   
 Looking at the first digit of GPIO status(GPIO0), there is a number 2, which means `digitalwrite`. Therefore, `pinMode(0,OUTPUT)` is executed internally so that `GPIO0` becomes `digitalwrite`.
+
+#### DELETE
+
+Disable all pins (actually, save the setting in EEPROM and restart).
+
+```sh
+$ curl restuino.local/ -X DELETE
+Change all pins to nan status...
+```
+
+#### POST
+
+Not defined.
 
 # Examples
 See [example](example/).
