@@ -8,14 +8,16 @@
 
 
 # Features
-`RESTuino` makes it possible to communicate *system functions* in the IoT.
+![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
 
-`RESTuino` allows us to make the following: 
+🌱 `RESTuino` makes it possible to communicate *system functions & data*　in the IoT.
+
+✨ `RESTuino` allows us to make... 
 - `IoT client` In this system, the arduino's GPIO is manipulated by the REST API.
 - `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
 
 
-`RESTuino` can be operated with
+✍ `RESTuino` can be operated with...
 - [curl](https://github.com/curl/curl)
 - [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja)
 - [Homebridge](https://github.com/homebridge/homebridge)
@@ -254,13 +256,9 @@ See [example](example/).
     ```
     This is the main program. Use only this program when incorporating it.
 
-- [L-chika](example/L-chika/)
+- [L-chika](example/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
 
-    Programs to turn on/off the LED connected to GPIO15 every second.
-
-- [Servo-switch](example/Servo-switch/)
-
-    Programs to move the servo to the angle defined by `angle`, `angle0` every second.
+- [Servo-switch](example/Servo-switch/) : Programs to move the servo to the angle defined by `angle`, `angle0` every second.
 
 
 # Tasks
