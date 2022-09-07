@@ -335,7 +335,7 @@ void handle_gpio(int pin)
   else if (server.method() == HTTP_DELETE)
   {
     gpio_arr[pin] = (uint8_t)restuino::nan;
-    server.send(202, "text/plain", "Transition to nan state...\r\n");
+    server.send(202, "text/plain", "Change the pin to nan status... \r\n");
     ESP.restart();
   }
   else
