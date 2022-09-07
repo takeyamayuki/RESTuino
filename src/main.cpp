@@ -9,7 +9,7 @@
 
 namespace restuino
 {
-  enum gpio_status
+  enum status
   {
     nan = 0,
     digitalread,
@@ -28,7 +28,7 @@ namespace restuino
 
 static const char *host_name = "restuino"; // RESTuino
 static const uint8_t n = 40;
-static uint8_t gpio_arr[n] = {}; //すべて0で初期化
+static uint16_t gpio_arr[n] = {}; //すべて0で初期化
 
 // Published values for SG90 servos; adjust if needed
 static const uint32_t minUs = 0;
@@ -41,7 +41,7 @@ WebServer server(80);
 
 Servo servo1;
 
-enum restuino::gpio_status request_to_num(String req)
+enum restuino::status request_to_num(String req)
 {
   if (req == "nan")
     return restuino::nan;
@@ -77,7 +77,7 @@ bool to0_flag()
 }
 
 // mode=true:angle0,angleのスイッチ, mode=false:自由角度への移動
-void move_sg90(bool mode, uint32_t to_angle)
+void move_sg90(bool mode, uint8_t to_angle)
 {
   if (mode)
     to0_flag() ? servo1.write(angle0) : servo1.write(angle);
@@ -96,10 +96,11 @@ String read_eeprom()
   return mes;
 }
 
+// server.send含まない
 bool put_to_control(uint8_t pin, String target)
 {
   Serial.println(gpio_arr[pin]);
-  // Serial.println(restuino::digitalwrite);
+
   switch (gpio_arr[pin])
   {
   case restuino::servo:
@@ -137,15 +138,17 @@ bool put_to_control(uint8_t pin, String target)
     }
     break;
 
-  default:
+  default: // nan, not found ○
     return false;
     break;
   }
 }
 
-bool post_to_setup_gpio(uint8_t pin, uint8_t setup_mode)
+// server.send含まない
+bool post_to_setup(uint8_t pin, uint8_t setup_mode)
 {
   Serial.println(setup_mode);
+
   switch (setup_mode)
   {
   case restuino::servo:
@@ -180,18 +183,21 @@ bool post_to_setup_gpio(uint8_t pin, uint8_t setup_mode)
     return true;
     break;
 
+  // nan, not found
+  // nanのPOST=DELETEのため、実装なし
   default:
     return false;
     break;
   }
 }
 
-bool put_to_setup_root(uint8_t pin, uint8_t setup_mode)
+// server.send含んで良い
+bool put_to_control_root(uint8_t setup_mode)
 {
   switch (setup_mode)
   {
   case restuino::reboot:
-    server.send(200, "text/plain", "Rebooting...\r\n");
+    server.send(202, "text/plain", "Rebooting...\r\n");
     ESP.restart();
     break;
 
@@ -204,16 +210,18 @@ bool put_to_setup_root(uint8_t pin, uint8_t setup_mode)
     server.send(200, "text/plain", "EEPROM write\r\n");
     break;
 
-  case restuino::reflect:
-    // read_eeprom();
+  case restuino::reflect: //作業途中でreflectすると、キャッシュされたgpio_arrが消える
+    read_eeprom();
     for (uint8_t i = 0; i < n; i++)
     {
-      post_to_setup_gpio(i, gpio_arr[i]); // server.send含まないこと
+      post_to_setup(i, gpio_arr[i]); // server.send含まないこと
     }
     server.send(200, "text/plain", "EEPROM read & reflect\r\n");
     break;
 
-  case restuino::not_found:
+  // case restuino::not_found:
+  // nan, not found
+  default:
     handle_not_found();
     break;
   }
@@ -237,24 +245,42 @@ String ip_to_String(uint32_t ip)
 
 void handle_root(void)
 {
+  /* PUT: reboot, saveなど */
   if (server.method() == HTTP_PUT)
-    put_to_setup_root(0, (uint8_t)request_to_num(server.arg("plain")));
+    put_to_control_root((uint8_t)request_to_num(server.arg("plain")));
 
+  /* GET: IP address, GPIO status(キャッシュ) */
   else if (server.method() == HTTP_GET)
   {
-    String mes = "";
     StaticJsonDocument<500> doc;
     doc["IP address"] = ip_to_String(WiFi.localIP());
-    // JsonArray GPIOstatus = doc.createNestedArray("GPIOstatus");
+
+    String mes = "";
     for (uint8_t i = 0; i < n; i++) // GPIO:0-39
     {
       mes += String(gpio_arr[i]);
     }
     doc["GPIO status"] = mes;
+
     char json_buf[500];
     serializeJsonPretty(doc, json_buf, 500);
     server.send(200, "application/json", json_buf);
-    // pinに反映させる
+  }
+
+  /* DELETE ：全ピンをnan状態にする */
+  else if (server.method() == HTTP_DELETE)
+  {
+    for (uint32_t i = 0; i < 1024; i++)
+    {
+      EEPROM.put(i, 0); // address=i*4
+    }
+    EEPROM.commit();
+    server.send(202, "text/plain", "Change all pins to nan status...\r\n");
+    ESP.restart();
+  }
+  else
+  {
+    handle_not_found();
   }
 }
 
@@ -264,12 +290,13 @@ void handle_gpio(int pin)
   /* POST ペリフェラル初期設定 */
   if (server.method() == HTTP_POST)
   {
-    if (post_to_setup_gpio(0, (uint8_t)request_to_num(server.arg("plain"))))
+    if (post_to_setup(pin, (uint8_t)request_to_num(server.arg("plain"))))
       server.send(200, "text/plain", server.arg("plain") + "\r\n");
 
     else
       handle_not_found();
   }
+
   /* PUT 更新 */
   else if (server.method() == HTTP_PUT)
   {
@@ -283,6 +310,7 @@ void handle_gpio(int pin)
   /* GET 情報取得 */
   else if (server.method() == HTTP_GET)
   {
+    Serial.println(gpio_arr[pin]);
     switch (gpio_arr[pin])
     {
     case restuino::servo:
@@ -302,6 +330,18 @@ void handle_gpio(int pin)
       break;
     }
   }
+
+  /* DELETE : ピンをnan状態にする */
+  else if (server.method() == HTTP_DELETE)
+  {
+    gpio_arr[pin] = (uint8_t)restuino::nan;
+    server.send(202, "text/plain", "Transition to nan state...\r\n");
+    ESP.restart();
+  }
+  else
+  {
+    handle_not_found();
+  }
 }
 
 void setup()
@@ -312,7 +352,7 @@ void setup()
   read_eeprom();
   for (uint8_t i = 0; i < n; i++)
   {
-    post_to_setup_gpio(i, gpio_arr[i]);
+    post_to_setup(i, gpio_arr[i]);
   }
   // シリアルコンソールのセットアップ
   Serial.begin(9600);
