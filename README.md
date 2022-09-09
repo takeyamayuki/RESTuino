@@ -103,7 +103,7 @@ or similer.
 Specify the target GPIO pin by URL. 
 
 #### POST 
-Use `POST` to set the status of a pin in the same way as arduino.       
+Use `POST` to set the status of a pin.       
 
 Request body:  
 - `digitalRead`  
@@ -114,7 +114,7 @@ Request body:
 - `(touch)`
 - `(dacWrite)`
 
-e.g. digitalWrite
+e.g. `digitalWrite`
 ```sh
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
 ```
@@ -122,7 +122,7 @@ $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWr
 #### PUT
 
 Use `PUT` to change or define the output value of any pin.
-- digitalWrite
+- `digitalWrite`
 
     Request body: `HIGH` or `LOW` or `0` or `1`  
 
@@ -130,7 +130,7 @@ Use `PUT` to change or define the output value of any pin.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
     ```
-- ledcWrite(alternative to `analogWrite` in esp32)  
+- `ledcWrite`(alternative to `analogWrite` in esp32)  
 
     Request body: `0~256 numbers`  
 
@@ -138,7 +138,7 @@ Use `PUT` to change or define the output value of any pin.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '100'
     ```
-- Servo  
+- `Servo`  
     Request body: `0~180 numbers` or `switch`
 
     - `0~180 numbers`: a servo motor moves to the angle specified by value.  
@@ -153,7 +153,7 @@ Use `PUT` to change or define the output value of any pin.
 
 Use `GET` to get the status of any pin.  
 Of course, the following information can also be obtained by opening any URL in a browser.
-- analogRead
+- `analogRead`
 
     e.g.
     ```sh
@@ -161,14 +161,14 @@ Of course, the following information can also be obtained by opening any URL in 
     100
     ```
 
-- digitalRead  
+- `digitalRead` 
 
     e.g.
     ```sh
     $ curl restuino.local/gpio1 -X GET
     0
     ```
-- Servo
+- `Servo`
 
     e.g.
     ```sh
