@@ -247,7 +247,7 @@ Change all pins to nan status...
 Not defined.
 
 # Examples
-See [example](example/).
+See [examples](examples/).
 1. Run setup.py
     ```sh
     $ python setup.py
