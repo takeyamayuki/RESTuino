@@ -20,7 +20,7 @@ namespace restuino
     touch,    /////////////////////////kore
     dacwrite, ///////////////////////kore
     save = 100,
-    reflect,
+    load,
     reboot,
     not_found,
   };
@@ -57,8 +57,8 @@ enum restuino::status request_to_num(String req)
     return restuino::servo;
   else if (req == "save")
     return restuino::save;
-  else if (req == "reflect")
-    return restuino::reflect;
+  else if (req == "load")
+    return restuino::load;
   else if (req == "reboot")
     return restuino::reboot;
   else
@@ -191,6 +191,15 @@ bool post_to_setup(uint8_t pin, uint8_t setup_mode)
   }
 }
 
+void load_status()
+{
+  read_eeprom();
+  for (uint8_t i = 0; i < n; i++)
+  {
+    post_to_setup(i, gpio_arr[i]); // server.send含まないこと
+  }
+}
+
 // server.send含んで良い
 bool put_to_control_root(uint8_t setup_mode)
 {
@@ -207,16 +216,12 @@ bool put_to_control_root(uint8_t setup_mode)
       EEPROM.put(i * 4, gpio_arr[i]); // address=i*4
     }
     EEPROM.commit();
-    server.send(200, "text/plain", "EEPROM write\r\n");
+    server.send(200, "text/plain", "Wrote\r\n");
     break;
 
-  case restuino::reflect: //作業途中でreflectすると、キャッシュされたgpio_arrが消える
-    read_eeprom();
-    for (uint8_t i = 0; i < n; i++)
-    {
-      post_to_setup(i, gpio_arr[i]); // server.send含まないこと
-    }
-    server.send(200, "text/plain", "EEPROM read & reflect\r\n");
+  case restuino::load: //作業途中でloadすると、キャッシュされたgpio_arrが消える
+    load_status();
+    server.send(200, "text/plain", "Loaded\r\n");
     break;
 
   // case restuino::not_found:
@@ -348,12 +353,8 @@ void setup()
 {
   // EEPROM setup
   EEPROM.begin(1024); // 1kB     156byte=39*4
-  // read reflect
-  read_eeprom();
-  for (uint8_t i = 0; i < n; i++)
-  {
-    post_to_setup(i, gpio_arr[i]);
-  }
+  // load
+  load_status();
   // シリアルコンソールのセットアップ
   Serial.begin(9600);
   delay(100);
