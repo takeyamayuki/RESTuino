@@ -81,65 +81,63 @@ or similer.
 
 # RESTful API
 
+
+1. Specify the GPIO number in the URL
+2. `POST` to define the pin status (digitalWrite, digitalRead, etc.)
+3. `PUT` to update the value (HIGH for digitalWrite, etc.)
+4. `GET` to obtain current information (digitalRead, etc.)
+5. `DELETE` to disable the pin status
+
 > **Note**   
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
-## URL
-### root
-- http://(IP_address)   
-    The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method.
+## GPIO access
 
-- http://restuino.local
+### URL
 
-### GPIO access
+http://restuino.local/gpio(pin_number)     
 
-- http://restuino.local/gpio(pin_number)     
-    (pin_number) is the pin number of the GPIO.  For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
-
-## Method
-
-### @http://restuino.local/gpio(pin_number)
+(pin_number) is the pin number of the GPIO. For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
 
 Specify the target GPIO pin by URL. 
 
-#### POST 
+### POST 
 Use `POST` to set the status of a pin.       
 
-Request body:  
-- `digitalRead`  
-- `digitalWrite`  
-- `analogRead`
-- `ledcWrite`
-- `Servo`
-- `(touch)`
-- `(dacWrite)`
+Request body: `digitalRead` | `digitalWrite` | `analogRead` | `ledcWrite` | `Servo` | `(touch)` | `(dacWrite)`
 
 e.g. `digitalWrite`
 ```sh
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
+digitalWrite
 ```
 
-#### PUT
+### PUT
 
-Use `PUT` to change or define the output value of any pin.
+Use `PUT` to change or define the output value of any pin. When the pin set by `POST` is in the following state, the following request body can be sent.
+
 - `digitalWrite`
 
-    Request body: `HIGH` or `LOW` or `0` or `1`  
+    Request body: `HIGH` | `LOW` | `0` | `1`  
 
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
+    LOW
     ```
-- `ledcWrite`(alternative to `analogWrite` in esp32)  
+
+- `ledcWrite` (alternative to `analogWrite` in esp32)  
 
     Request body: `0~256 numbers`  
 
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '100'
+    100
     ```
+
 - `Servo`  
-    Request body: `0~180 numbers` or `switch`
+    Request body: `0~180 numbers` | `switch`
 
     - `0~180 numbers`: a servo motor moves to the angle specified by value.  
     - `switch`: Each time the following command is sent, the servo motor moves back and forth between `angle` and `angle0`.  
@@ -147,36 +145,26 @@ Use `PUT` to change or define the output value of any pin.
     e.g.
     ```sh
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
+    88
     ```
 
-#### GET
+### GET
 
 Use `GET` to get the status of any pin.  
 Of course, the following information can also be obtained by opening any URL in a browser.
-- `analogRead`
+The following response body is received when the pin set by `POST` is in the following state.
 
-    e.g.
-    ```sh
-    $ curl restuino.local/gpio0 -X GET
-    100
-    ```
+- `analogRead`: `0~4095 numbers`
+- `digitalRead`: `0` | `1`
+- `Servo`: `0~180 numbers`
 
-- `digitalRead` 
+e.g. `digitalRead`
+```sh
+$ curl restuino.local/gpio1 -X GET
+0
+```
 
-    e.g.
-    ```sh
-    $ curl restuino.local/gpio1 -X GET
-    0
-    ```
-- `Servo`
-
-    e.g.
-    ```sh
-    $ curl restuino.local/gpio1 -X GET
-    0
-    ```
-
-#### DELETE
+### DELETE
 
 Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
 e.g.
@@ -186,14 +174,19 @@ Transition to nan state...
 ```
 
 
-### @http://restuino.local/
+## root
 
-#### PUT
+### URL
+- http://(IP_address)   
+    The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method (It's easy with a browser).
 
-Request body: `save`or `load` or `reboot` 
-```sh
-$ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|load'
-```
+- http://restuino.local
+
+
+### PUT
+
+Request body: `save` | `load` | `reboot` 
+
 - `save`: Save the current GPIO setting status to EEPROM.   
 - `load`: Load GPIO settings stored in EEPROM and reflect to actual pin settings.
 - `reboot`: Reboot ESP32.
@@ -202,13 +195,13 @@ $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|loa
 > The `load` is done automatically at startup, but the user must `save` before turning off the power.  
 > When operating as an IoT client, once the pin state is saved, it will be saved in eeprom, so there is no need to `save` after that.
 
-
 e.g.
 ```sh
 $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save'
+Wrote
 ```
 
-#### GET
+### GET
 
 Obtain IP address and GPIO status. GPIO status is output in chunks of 40. Starting from the first left digit, GPIO0, 1,2.... and its value is defined as follows.
 ```sh
@@ -233,7 +226,7 @@ $ curl restuino.local/ -X GET
 e.g.   
 Looking at the first digit of GPIO status(GPIO0), there is a number 2, which means `digitalwrite`. Therefore, `pinMode(0,OUTPUT)` is executed internally so that `GPIO0` becomes `digitalwrite`.
 
-#### DELETE
+### DELETE
 
 Disable all pins (actually, save the setting in EEPROM and restart).
 
@@ -242,7 +235,7 @@ $ curl restuino.local/ -X DELETE
 Change all pins to nan status...
 ```
 
-#### POST
+### POST
 
 Not defined.
 
