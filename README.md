@@ -14,7 +14,7 @@
     - [Control GPIO](#control-gpio)
     - [Control of the entire system](#control-of-the-entire-system)
 - [Examples](#examples)
-- [Demonstrations](#demonstration)
+- [Videos](#videos)
 - [Contribution](#contribution)
 
 # Features
@@ -250,6 +250,8 @@ Change all pins to nan status...
 Not defined.
 
 # Examples
+## Python 
+
 See [examples](examples/).
 1. Run setup.py
     ```sh
@@ -265,30 +267,38 @@ See [examples](examples/).
 
 - [L-chika](example/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
 
-- [Servo-switch](example/Servo-switch/) : Programs to move the servo to the angle defined by `angle`, `angle0` every second.
+- [Servo-switch](example/Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
 
-# Demonstration
+## curl
+[digitalRead_with_curl.sh](example/digitalRead_with_curl.sh) : A script that executes `digitalRead` to GPIO15 and obtains its status.
+
+```sh
+$ ./digitalRead_with_curl.sh
+0
+```
+
+# Videos
+
+- curl
+
+    The program is [here](examples/digitalRead_with_curl.sh).
+
+    https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
 
 
-### `curl`
-The program is [here](examples/digitalRead_with_curl.sh).
+- python(request)
 
-https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
+    The program is [here](examples/L-chika/).
 
+    https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
 
-### `python(request)`
+- homebridge
 
-The program is [here](examples/L-chika/).
+    https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
 
-https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
+- Talend API tester
 
-### `homebridge`
-
-https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
-
-### `Talend API tester`
-
-https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
+    https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
 
 
