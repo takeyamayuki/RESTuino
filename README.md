@@ -6,6 +6,16 @@
    A firmware for ESP32 to handle arduino GPIO via REST API  
 </div>
 
+# Outline
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Control GPIO](#control-gpio)
+    - [Control of the entire system](#control-of-the-entire-system)
+- [Examples](#examples)
+- [Demonstrations](#demonstration)
+- [Contribution](#contribution)
 
 # Features
 ![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
@@ -79,8 +89,7 @@ or similer.
 6. Use this the way you want to use it.
 
 
-# RESTful API
-
+# Usage
 
 1. Specify the GPIO number in the URL
 2. `POST` to define the pin status (digitalWrite, digitalRead, etc.)
@@ -91,7 +100,7 @@ or similer.
 > **Note**   
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
-## GPIO access
+## Control GPIO
 
 ### URL
 
@@ -114,14 +123,15 @@ digitalWrite
 
 ### PUT
 
-Use `PUT` to change or define the output value of any pin. When the pin set by `POST` is in the following state, the following request body can be sent.
+Use `PUT` to change or define the output value of any pin.  
+The following request body can be sent when the GPIO pin set by `POST` is in the following state.
 
 - `digitalWrite`
 
     Request body: `HIGH` | `LOW` | `0` | `1`  
 
-    e.g.
     ```sh
+    # e.g.
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d 'LOW'
     LOW
     ```
@@ -130,8 +140,8 @@ Use `PUT` to change or define the output value of any pin. When the pin set by `
 
     Request body: `0~256 numbers`  
 
-    e.g.
     ```sh
+    # e.g.
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '100'
     100
     ```
@@ -142,24 +152,23 @@ Use `PUT` to change or define the output value of any pin. When the pin set by `
     - `0~180 numbers`: a servo motor moves to the angle specified by value.  
     - `switch`: Each time the following command is sent, the servo motor moves back and forth between `angle` and `angle0`.  
     
-    e.g.
     ```sh
+    # e.g.
     $ curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '88'
     88
     ```
 
 ### GET
 
-Use `GET` to get the status of any pin.  
-Of course, the following information can also be obtained by opening any URL in a browser.
+Use `GET` to get the status of any pin. (It's easy with a browser.)  
 The following response body is received when the pin set by `POST` is in the following state.
 
 - `analogRead`: `0~4095 numbers`
 - `digitalRead`: `0` | `1`
 - `Servo`: `0~180 numbers`
 
-e.g. `digitalRead`
 ```sh
+# e.g. digitalRead
 $ curl restuino.local/gpio1 -X GET
 0
 ```
@@ -167,14 +176,15 @@ $ curl restuino.local/gpio1 -X GET
 ### DELETE
 
 Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restart).
-e.g.
+
 ```sh
+# e.g.
 $ curl restuino.local/gpio1 -X DELETE
 Transition to nan state...
 ```
 
 
-## root
+## Control of the entire system
 
 ### URL
 - http://(IP_address)   
@@ -195,8 +205,8 @@ Request body: `save` | `load` | `reboot`
 > The `load` is done automatically at startup, but the user must `save` before turning off the power.  
 > When operating as an IoT client, once the pin state is saved, it will be saved in eeprom, so there is no need to `save` after that.
 
-e.g.
 ```sh
+# e.g.
 $ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save'
 Wrote
 ```
@@ -260,40 +270,27 @@ See [examples](examples/).
 # Demonstration
 
 
-### Operation with `curl`
+### `curl`
+The program is [here](examples/digitalRead_with_curl.sh).
 
 https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
 
 
-### Operation with `python(request)`
+### `python(request)`
+
+The program is [here](examples/L-chika/).
 
 https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
 
-### Operation with `homebridge`
+### `homebridge`
 
 https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
 
-### Operation with `Talend API tester`
+### `Talend API tester`
 
 https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
 
-
-# Tasks
-- [x] digitalread  
-- [ ] pullupread  
-- [x] digitalwrite PUT  
-- [ ] digitalwrite GET  
-- [x] analogread  
-- [x] ledcwrite (analogwrite for esp32)  
-- [x] servo  
-- [ ] touch  
-- [ ] dacwrite  
-- [x] eeprom save of settings   
-- [x] eeprom load of settings   
-- [x] Apply settings saved in eeprom   
-- [ ] Multiple servo, multiple ledcwrite   
-- [ ] Communication(I2C, SPI, UART)
 
 # Contribution
 There are no specific guidelines for contributions, so please feel free to send me pull requests and issues.
