@@ -264,19 +264,26 @@ See [example](example/).
 
 - [Servo-switch](example/Servo-switch/) : Programs to move the servo to the angle defined by `angle`, `angle0` every second.
 
-# demo
+# Demonstration
 
-- Operation with `Talend API tester`
+
+### Operation with `curl`
+
+https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
+
+
+### Operation with `python(request)`
+
+https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
+
+### Operation with `homebridge`
+
+https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
+
+### Operation with `Talend API tester`
 
 https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
-- Operations with `curl`
-
-https://user-images.githubusercontent.com/22733958/189341420-99323355-88fe-4034-b1e5-218d9f66b608.mp4
-
-- Operations with `python(request)`
-
-- Operation with `homebridge`
 
 
 # Tasks
