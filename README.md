@@ -10,7 +10,7 @@
 # Features
 ![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
 
-🌱 `RESTuino` makes it possible to communicate *system functions & data*　in the IoT.
+🌱 `RESTuino` makes it possible to communicate *system functions & data* in the IoT.
 
 ✨ `RESTuino` allows us to make... 
 - `IoT client` In this system, the arduino's GPIO is manipulated by the REST API.
@@ -85,7 +85,7 @@ or similer.
 > **Note**   
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
-## URI
+## URL
 ### root
 - http://(IP_address)   
     The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method.
@@ -101,7 +101,7 @@ or similer.
 
 ### @http://restuino.local/gpio(pin_number)
 
-Specify the target GPIO pin by URI. 
+Specify the target GPIO pin by URL. 
 
 #### POST 
 Use `POST` to set the status of a pin in the same way as arduino.       
@@ -143,7 +143,7 @@ Use `PUT` to change or define the output value of any pin.
     Request body: `0~180 numbers` or `switch`
 
     - `0~180 numbers`: a servo motor moves to the angle specified by value.  
-    - `switch`: Each time the following command is sent, the servo motor moves back and forth between angle and angle0.  
+    - `switch`: Each time the following command is sent, the servo motor moves back and forth between `angle` and `angle0`.  
     
     e.g.
     ```sh
@@ -153,7 +153,7 @@ Use `PUT` to change or define the output value of any pin.
 #### GET
 
 Use `GET` to get the status of any pin.  
-Of course, the following information can also be obtained by opening any URI in a browser.
+Of course, the following information can also be obtained by opening any URL in a browser.
 - analogRead
 
     e.g.
@@ -191,13 +191,18 @@ Transition to nan state...
 
 #### PUT
 
-Request body: `save` or `reboot` or `reflect`
+Request body: `save`or `load` or `reboot` 
 ```sh
-$ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|reflect'
+$ curl restuino.local/ -X POST -H 'Content-Type: text/plain' -d 'save|reboot|load'
 ```
 - `save`: Save the current GPIO setting status to EEPROM.   
+- `load`: Load GPIO settings stored in EEPROM and reflect to actual pin settings.
 - `reboot`: Reboot ESP32.
-- `reflect`: Reflect GPIO settings stored in EEPROM.
+
+> **Note**   
+> The `load` is done automatically at startup, but the user must `save` before turning off the power.  
+> When operating as an IoT client, once the pin state is saved, it will be saved in eeprom, so there is no need to `save` after that.
+
 
 e.g.
 ```sh
@@ -275,6 +280,7 @@ See [example](example/).
 - [x] eeprom load of settings   
 - [x] Apply settings saved in eeprom   
 - [ ] Multiple servo, multiple ledcwrite   
+- [ ] Communication(I2C, SPI, UART)
 
 # Contribution
 There are no specific guidelines for contributions, so please feel free to send me pull requests and issues.
