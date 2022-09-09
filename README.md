@@ -265,12 +265,12 @@ See [examples](examples/).
     ```
     This is the main program. Use only this program when incorporating it.
 
-- [L-chika](example/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
+- [L-chika](examples/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
 
-- [Servo-switch](example/Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
+- [Servo-switch](examples/Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
 
 ## curl
-[digitalRead_with_curl.sh](example/digitalRead_with_curl.sh) : A script that executes `digitalRead` to GPIO15 and obtains its status.
+[digitalRead_with_curl.sh](examples/digitalRead_with_curl.sh) : A script that executes `digitalRead` to GPIO15 and obtains its status.
 
 ```sh
 $ ./digitalRead_with_curl.sh
