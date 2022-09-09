@@ -266,13 +266,11 @@ See [example](example/).
 
 # Demonstration
 
-### Operation with `Talend API tester`
-
-https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
 ### Operation with `curl`
 
-https://user-images.githubusercontent.com/22733958/189341420-99323355-88fe-4034-b1e5-218d9f66b608.mp4
+https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
+
 
 ### Operation with `python(request)`
 
@@ -280,8 +278,11 @@ https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-
 
 ### Operation with `homebridge`
 
-https://user-images.githubusercontent.com/22733958/189351372-f26cd36f-cab7-4664-9acd-3a0d353bee2a.mov
+https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
 
+### Operation with `Talend API tester`
+
+https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
 
 
