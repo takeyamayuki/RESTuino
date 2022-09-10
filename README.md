@@ -16,7 +16,6 @@
     - [Control of the entire system](#control-of-the-entire-system)
 - [Examples](#examples)
 - [Videos](#videos)
-- [Contribution](#contribution)
 
 # Features
 ![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
