@@ -266,9 +266,9 @@ See [examples](examples/).
 
 ## Python 
 
-- [python-L-chika](examples/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
+- [python-L-chika](examples/python-L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
 
-- [python-Servo-switch](examples/Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
+- [python-Servo-switch](examples/python-Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
 
 1. Run setup.py
     ```sh
@@ -284,13 +284,13 @@ See [examples](examples/).
 
 https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
 
-The program is [here](examples/L-chika/).
+The program is [here](examples/python-L-chika/).
 
 ## curl
 
-- [curl-digitalRead](examples/digitalRead_with_curl.sh): Scripts that executes `digitalRead` to GPIO15 and obtains its status.
+- [curl-digitalRead](examples/curl-digitalRead): Scripts that executes `digitalRead` to GPIO15 and obtains its status.
 
-- [curl-Servo](examples/digitalRead_with_curl.sh): Programs to move the servo (connected to GPIO15) to 88°.
+- [curl-Servo](examples/curl-Servo): Programs to move the servo (connected to GPIO15) to 88°.
 
 1. Run setup.sh
     ```sh
@@ -309,7 +309,7 @@ The program is [here](examples/L-chika/).
 
 https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
 
-The program is [here](examples/digitalRead_with_curl.sh).
+The program is [here](examples/curl-digitalRead).
 
 ## [homebridge](https://github.com/homebridge/homebridge)
 
