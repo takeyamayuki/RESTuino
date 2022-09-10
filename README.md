@@ -6,7 +6,8 @@
    A firmware for ESP32 to handle arduino GPIO via REST API  
 </div>
 
-# Outline
+# Contents
+
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -115,8 +116,8 @@ Use `POST` to set the status of a pin.
 
 Request body: `digitalRead` | `digitalWrite` | `analogRead` | `ledcWrite` | `Servo` | `(touch)` | `(dacWrite)`
 
-e.g. `digitalWrite`
 ```sh
+# e.g. digitalWrite
 $ curl restuino.local/gpio15 -X POST -H 'Content-Type: text/plain' -d 'digitalWrite'
 digitalWrite
 ```
@@ -160,7 +161,7 @@ The following request body can be sent when the GPIO pin set by `POST` is in the
 
 ### GET
 
-Use `GET` to get the status of any pin. (It's easy with a browser.)  
+Use `GET` to get the status of any pin.   
 The following response body is received when the pin set by `POST` is in the following state.
 
 - `analogRead`: `0~4095 numbers`
@@ -180,7 +181,7 @@ Use `DELETE` to disable any pin (actually, save the setting in EEPROM and restar
 ```sh
 # e.g.
 $ curl restuino.local/gpio1 -X DELETE
-Transition to nan state...
+Change the pin to nan status... 
 ```
 
 
@@ -250,9 +251,15 @@ Change all pins to nan status...
 Not defined.
 
 # Examples
-## Python 
 
 See [examples](examples/).
+
+## Python 
+
+- [python-L-chika](examples/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
+
+- [python-Servo-switch](examples/Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
+
 1. Run setup.py
     ```sh
     $ python setup.py
@@ -265,17 +272,25 @@ See [examples](examples/).
     ```
     This is the main program. Use only this program when incorporating it.
 
-- [L-chika](examples/L-chika/) : Programs to turn on/off the LED connected to GPIO15 every second.
-
-- [Servo-switch](examples/Servo-switch/) : Programs to move the servo (connected to GPIO15) to the angle defined by `angle`, `angle0` every second.
-
 ## curl
-[digitalRead_with_curl.sh](examples/digitalRead_with_curl.sh) : A script that executes `digitalRead` to GPIO15 and obtains its status.
 
-```sh
-$ ./digitalRead_with_curl.sh
-0
-```
+- [curl-digitalRead](examples/digitalRead_with_curl.sh): Scripts that executes `digitalRead` to GPIO15 and obtains its status.
+
+- [curl-Servo](examples/digitalRead_with_curl.sh): Programs to move the servo (connected to GPIO15) to 88°.
+
+1. Run setup.sh
+    ```sh
+    $ chmod +x setup.sh
+    $ ./setup.sh
+    ```
+    Configure GPIO settings. Run it only once.
+
+2. Run main.sh
+    ```sh
+    $ chmod +x main.sh
+    $ ./main.sh
+    ```
+    This is the main program. Use only this program when incorporating it.
 
 # Videos
 
@@ -300,8 +315,4 @@ $ ./digitalRead_with_curl.sh
 
     https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
-
-
-# Contribution
-There are no specific guidelines for contributions, so please feel free to send me pull requests and issues.
 
