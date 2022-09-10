@@ -259,6 +259,8 @@ Not defined.
 
 ## Connect to [homebridge](https://github.com/homebridge/homebridge)
 
+[homebridge](https://github.com/homebridge/homebridge) is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. This allows you to use iOS apps to control devices that do not natively support HomeKit.
+
 In the homebridge config editor, add the following to the `accessories` section:
 ```json
 "accessories": [
@@ -296,9 +298,9 @@ See [examples](examples/).
     ```
     This is the main program. Use only this program when incorporating it.
 
-The program is [here](examples/L-chika/).
-
 https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
+
+The program is [here](examples/L-chika/).
 
 ## curl
 
@@ -320,13 +322,13 @@ https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-
     ```
     This is the main program. Use only this program when incorporating it.
 
-The program is [here](examples/digitalRead_with_curl.sh).
 
 https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
 
+The program is [here](examples/digitalRead_with_curl.sh).
 
 ## Talend API tester
 
-    https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
+https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
 
