@@ -178,7 +178,7 @@ bool post_to_setup(uint8_t pin, uint8_t setup_mode)
     break;
 
   case restuino::analogread:
-    pinMode(pin, INPUT);
+    pinMode(pin, ANALOG);
     gpio_arr[pin] = setup_mode;
     return true;
     break;
