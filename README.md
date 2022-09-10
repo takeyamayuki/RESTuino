@@ -6,10 +6,6 @@
    A firmware for ESP32 to handle arduino GPIO via REST API  
 </div>
 
-<p align="center">
-![Demo](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
-</p>
-
 # Contents
 
 - [Features](#features)
@@ -25,7 +21,7 @@
     - [Talend API Tester](#talend-api-tester)
 
 # Features
-
+![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
 
 🌱 `RESTuino` makes it possible to communicate *system functions & data* in the IoT.
 
