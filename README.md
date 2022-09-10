@@ -14,6 +14,7 @@
 - [Usage](#usage)
     - [Control GPIO](#control-gpio)
     - [Control of the entire system](#control-of-the-entire-system)
+    - [Connect to homebridge](#connect-to-homebridge)
 - [Examples](#examples)
 - [Videos](#videos)
 
@@ -43,6 +44,13 @@ or similer.
     - [MH ET LIVE ESP32DevKIT](https://ja.aliexpress.com/item/32880702799.html?spm=a2g0s.8937460.0.0.72832e0edJMMVm&gatewayAdapt=glo2jpn)    
 
 - PlatformIO
+
+    - [PlatformIO VSCode extension](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)  
+
+    - [PlatformIO Core](https://docs.platformio.org/en/latest/core/installation.html)
+        ```sh
+        $ pip install -U platformio
+        ```
 
 # Installation
 1. Clone this repository.
@@ -249,6 +257,23 @@ Change all pins to nan status...
 
 Not defined.
 
+## Connect to [homebridge](https://github.com/homebridge/homebridge)
+
+In the homebridge config editor, add the following to the `accessories` section:
+```json
+"accessories": [
+    {
+        "accessory": "CMD",
+        "name": "light",
+        "on_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '56'",
+        "off_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '6'"
+    }
+]
+```
+
+https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
+
+
 # Examples
 
 See [examples](examples/).
@@ -271,6 +296,10 @@ See [examples](examples/).
     ```
     This is the main program. Use only this program when incorporating it.
 
+The program is [here](examples/L-chika/).
+
+https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
+
 ## curl
 
 - [curl-digitalRead](examples/digitalRead_with_curl.sh): Scripts that executes `digitalRead` to GPIO15 and obtains its status.
@@ -291,26 +320,12 @@ See [examples](examples/).
     ```
     This is the main program. Use only this program when incorporating it.
 
-# Videos
+The program is [here](examples/digitalRead_with_curl.sh).
 
-- curl
-
-    The program is [here](examples/digitalRead_with_curl.sh).
-
-    https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
+https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
 
 
-- python(request)
-
-    The program is [here](examples/L-chika/).
-
-    https://user-images.githubusercontent.com/22733958/189347822-e8469ee5-c92b-40f8-a5f1-4262459ac20f.mp4
-
-- homebridge
-
-    https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
-
-- Talend API tester
+## Talend API tester
 
     https://user-images.githubusercontent.com/22733958/189336576-649f115f-5116-4f43-890a-9500fc9b182a.mp4
 
