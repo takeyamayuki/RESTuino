@@ -6,6 +6,10 @@
    A firmware for ESP32 to handle arduino GPIO via REST API  
 </div>
 
+<p align="center">
+![Demo](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
+</p>
+
 # Contents
 
 - [Features](#features)
@@ -14,12 +18,14 @@
 - [Usage](#usage)
     - [Control GPIO](#control-gpio)
     - [Control of the entire system](#control-of-the-entire-system)
-    - [Connect to homebridge](#connect-to-homebridge)
 - [Examples](#examples)
-- [Videos](#videos)
+    - [curl](#curl)
+    - [Python](#python)
+    - [homebridge](#homebridge)
+    - [Talend API Tester](#talend-api-tester)
 
 # Features
-![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
+
 
 🌱 `RESTuino` makes it possible to communicate *system functions & data* in the IoT.
 
@@ -30,9 +36,9 @@
 
 ✍ `RESTuino` can be operated with...
 - [curl](https://github.com/curl/curl)
-- [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja)
 - [Homebridge](https://github.com/homebridge/homebridge)
-- [Python(requests)](https://requests.readthedocs.io/en/latest/)  
+- [Python(requests)](https://requests.readthedocs.io/en/latest/) 
+- [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja)  
 or similer.
 
 
@@ -257,24 +263,6 @@ Change all pins to nan status...
 
 Not defined.
 
-## Connect to [homebridge](https://github.com/homebridge/homebridge)
-
-[homebridge](https://github.com/homebridge/homebridge) is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. This allows you to use iOS apps to control devices that do not natively support HomeKit.
-
-In the homebridge config editor, add the following to the `accessories` section:
-```json
-"accessories": [
-    {
-        "accessory": "CMD",
-        "name": "light",
-        "on_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '56'",
-        "off_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '6'"
-    }
-]
-```
-
-https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
-
 
 # Examples
 
@@ -326,6 +314,25 @@ The program is [here](examples/L-chika/).
 https://user-images.githubusercontent.com/22733958/189353947-962c44ff-effe-4be4-992b-4562dd6cd37f.mp4
 
 The program is [here](examples/digitalRead_with_curl.sh).
+
+## [homebridge](https://github.com/homebridge/homebridge)
+
+[homebridge](https://github.com/homebridge/homebridge) is a lightweight NodeJS server you can run on your home network that emulates the iOS HomeKit API. This allows you to use iOS apps to control devices that do not natively support HomeKit.
+
+In the homebridge config editor, add the following to the `accessories` section:
+```json
+"accessories": [
+    {
+        "accessory": "CMD",
+        "name": "light",
+        "on_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '56'",
+        "off_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '6'"
+    }
+]
+```
+
+https://user-images.githubusercontent.com/22733958/189354008-0065546a-124d-4562-aaaa-19c268d264d2.mov
+
 
 ## Talend API tester
 
