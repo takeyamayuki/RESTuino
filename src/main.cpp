@@ -215,8 +215,12 @@ bool put_to_control_root(uint8_t setup_mode)
     {
       EEPROM.put(i * 4, gpio_arr[i]); // address=i*4
     }
-    EEPROM.commit();
-    server.send(200, "text/plain", "Wrote\r\n");
+    if (EEPROM.commit())
+      server.send(200, "text/plain", "Saved\r\n");
+
+    else
+      server.send(400, "text/plain", "Cannot write to EEPROM\r\n");
+    ESP.restart();
     break;
 
   case restuino::load: //作業途中でloadすると、キャッシュされたgpio_arrが消える
