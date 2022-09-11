@@ -330,8 +330,8 @@ In the homebridge config editor, add the following to the `accessories` section:
     {
         "accessory": "CMD",
         "name": "light",
-        "on_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '56'",
-        "off_cmd": "curl restuino.local -X PUT -H 'Content-Type: text/plain' -d '6'"
+        "on_cmd": "curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '56'",
+        "off_cmd": "curl restuino.local/gpio15 -X PUT -H 'Content-Type: text/plain' -d '6'"
     }
 ]
 ```
