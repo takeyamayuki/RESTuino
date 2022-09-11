@@ -59,7 +59,7 @@ or similer.
     ```sh
     $ git clone https://github.com/takeyamayuki/RESTuino.git
     ```
-2. Define `ssid`, `password` of your wifi router by changing [ssid_define.cpp](src/ssid_define.cpp).
+1. Define `ssid`, `password` of your wifi router by changing [ssid_define.cpp](src/ssid_define.cpp).
     ```sh
     $ cd RESTuino
     $ vi src/ssid_define.cpp
@@ -70,8 +70,17 @@ or similer.
     const char *ssid_def[] = {"ssid1", "ssid2"};
     const char *ssid_pass[] = {"pass1", "pass2"};
     ```
+1. If more than one RESTuino is to be installed, `host_name`(lin 29) must be changed.
+    ```sh
+    $ vi src/main.cpp
+    ``` 
+    ```diff 
+    static const char *host_name = 
+    -  "restuino"; 
+    +  "restuino2"; 
+    ```
 <!-- 
-4. Clear EEPROM.
+1. Clear EEPROM.
     ```sh
     # for esp32-devkit
     $ pio run -e esp32dev-setup -t upload
@@ -79,7 +88,7 @@ or similer.
     $ pio run -e mhetesp-setup -t upload
     ``` -->
 
-3. Build and upload [RESTuino](src).
+4. Build and upload [RESTuino](src).
     ```sh
     # for esp32-devkit
     $ pio run -e esp32dev -t upload
@@ -87,7 +96,7 @@ or similer.
     $ pio run -e mhetesp -t upload
     ```
 
-4. Clear EEPROM.
+5. Clear EEPROM.
 
     Initialize the RESTuino system when you see `WiFi connected.` on the serial monitor.
     
