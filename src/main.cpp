@@ -17,8 +17,8 @@ namespace restuino
     analogread,
     ledcwrite,
     servo,
-    touch,    /////////////////////////kore
-    dacwrite, ///////////////////////kore
+    touch,    // kore
+    dacwrite, // kore
     save = 100,
     load,
     reboot,
@@ -201,7 +201,7 @@ void load_status()
 }
 
 // server.send含んで良い
-bool put_to_control_root(uint8_t setup_mode)
+void put_to_control_root(uint8_t setup_mode)
 {
   switch (setup_mode)
   {
