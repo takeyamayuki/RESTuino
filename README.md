@@ -125,7 +125,8 @@ or similer.
 
 http://restuino.local/gpio(pin_number)     
 
-(pin_number) is the pin number of the GPIO. For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.
+(pin_number) is the pin number of the GPIO. For example, `http://restuino.local/gpio15` is the GPIO15 of ESP32.  
+It is recommended to use `http://restuino.local` instead of accessing the IP address, because of the heavy use of `ESP.restart()` in the RESTuino process.
 
 Specify the target GPIO pin by URL. 
 
@@ -207,7 +208,8 @@ Change the pin to nan status...
 
 ### URL
 - http://(IP_address)   
-    The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method (It's easy with a browser).
+    The IP address can be obtained via serial communication or `http://restuino.local` via `GET` method (It's easy with a browser).   
+    It is recommended to use `http://restuino.local` instead of accessing the IP address, because of the heavy use of `ESP.restart()` in the RESTuino process.
 
 - http://restuino.local
 
