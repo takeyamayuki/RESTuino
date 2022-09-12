@@ -8,7 +8,7 @@
 
 # Contents
 
-- [Features](#features)
+- [What is RESTuino?](#what-is-restuino)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
