@@ -26,7 +26,7 @@
 🌱 `RESTuino` makes it possible to communicate *system functions & data* in the IoT.
 
 ✨ `RESTuino` allows us to make... 
-- `IoT client` In this system, the arduino's GPIO is manipulated by the REST API.
+- `IoT client` Arduino GPIO is manipulated by the REST API.
 - `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
 
 
@@ -36,6 +36,11 @@
 - [Python(requests)](https://requests.readthedocs.io/en/latest/) 
 - [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja)  
 or similer.
+
+In embedded development, we have `Arduino` and `CircuitPython` as software initiatives to improve development productivity. Today, a new standard in embedded development is born. 
+It is the `RESTuino`, interactive embedded development firmware for ESP32.
+
+Specifically, you can specify a GPIO number in the URL, `POS`T to define a pin state (digitalWrite, digitalRead, etc.), `PUT` to update the value (digitalWrite to HIGH, LOW, etc.), `GET` to get current information, `DELETE` to disable a pin state DELETE can be used to disable the pin status. And if you do `save`, the pin state is saved in EEPROM, so it is easy to operate as client-side software in IoT.
 
 
 # Requirements
