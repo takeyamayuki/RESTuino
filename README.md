@@ -20,13 +20,19 @@
     - [homebridge](#homebridge)
     - [Talend API Tester](#talend-api-tester)
 
-# Features
+# What is RESTuino?
 ![IMG_2850-アニメーションイメージ（大）](https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif)
+
+In embedded development, we have `Arduino` and `CircuitPython` as software initiatives to improve development productivity. Today, a new standard in embedded development is born. 
+It is the `RESTuino`, interactive embedded development firmware for ESP32.
+
+Specifically, you can specify a GPIO number in the URL, `POS`T to define a pin state (digitalWrite, digitalRead, etc.), `PUT` to update the value (digitalWrite to HIGH, LOW, etc.), `GET` to get current information, `DELETE` to disable a pin state DELETE can be used to disable the pin status. And if you do `save`, the pin state is saved in EEPROM, so it is easy to operate as client-side software in IoT.
+
 
 🌱 `RESTuino` makes it possible to communicate *system functions & data* in the IoT.
 
 ✨ `RESTuino` allows us to make... 
-- `IoT client` Arduino GPIO is manipulated by the REST API.
+- `IoT client` Arduino GPIOs can be manipulated via REST API.  
 - `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
 
 
@@ -36,11 +42,6 @@
 - [Python(requests)](https://requests.readthedocs.io/en/latest/) 
 - [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja)  
 or similer.
-
-In embedded development, we have `Arduino` and `CircuitPython` as software initiatives to improve development productivity. Today, a new standard in embedded development is born. 
-It is the `RESTuino`, interactive embedded development firmware for ESP32.
-
-Specifically, you can specify a GPIO number in the URL, `POS`T to define a pin state (digitalWrite, digitalRead, etc.), `PUT` to update the value (digitalWrite to HIGH, LOW, etc.), `GET` to get current information, `DELETE` to disable a pin state DELETE can be used to disable the pin status. And if you do `save`, the pin state is saved in EEPROM, so it is easy to operate as client-side software in IoT.
 
 
 # Requirements
