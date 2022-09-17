@@ -82,7 +82,7 @@ or similer.
     const char *ssid_def[] = {"ssid1", "ssid2"};
     const char *ssid_pass[] = {"pass1", "pass2"};
     ```
-1. If more than one RESTuino is to be installed, `host_name`(lin 29) must be changed.
+1. If more than one RESTuino is to be installed, change `host_name`([here](https://github.com/takeyamayuki/RESTuino/blob/main/src/restuino_func.cpp#L4)).
     ```sh
     $ vi src/main.cpp
     ``` 
