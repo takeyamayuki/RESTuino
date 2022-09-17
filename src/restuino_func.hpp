@@ -27,8 +27,8 @@ namespace restuino
     not_found,
   };
 }
-extern WebServer server(80);
-extern Servo servo1;
+static WebServer server(80);
+static Servo servo1;
 
 enum restuino::status request_to_num(String req);
 void handle_not_found(void);

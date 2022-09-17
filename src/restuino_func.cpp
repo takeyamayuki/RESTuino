@@ -1,10 +1,3 @@
-#include <Arduino.h>
-#include <WiFi.h>
-#include <EEPROM.h>
-#include <ESPmDNS.h>
-#include <WebServer.h>
-#include <ESP32Servo.h>
-#include <ArduinoJson.h>
 #include "restuino_func.hpp"
 
 const char *host_name = "restuino"; // RESTuino

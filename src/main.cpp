@@ -1,13 +1,5 @@
-#include <Arduino.h>
-#include <WiFi.h>
-#include <EEPROM.h>
-#include <ESPmDNS.h>
-#include <WebServer.h>
-#include <ESP32Servo.h>
-#include <ArduinoJson.h>
 #include "ssid_define.hpp"
 #include "restuino_func.hpp"
-
 
 void setup()
 {
