@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include "ssid_define.hpp"
 #include "restuino_func.hpp"
 
