@@ -22,15 +22,22 @@
 
 # What is RESTuino?
 
+In embedded development, we have `Arduino` and `CircuitPython` as software initiatives to improve development productivity. Today, a new standard in embedded development is born. 
+It is the `RESTuino`, interactive embedded development firmware for ESP32.
+
+I created an external API layer for the hardware abstraction layer to enable GPIO operations from outside the microcontroller.
+In this case, I created `RESTful API` for the `Arduino` hardware abstraction layer inside the `ESP32` microcontroller to enable GPIO operations.
+
+<img src="https://user-images.githubusercontent.com/22733958/190840645-0b4f1d01-882c-4bf5-ab9c-5d2deccc5081.png" width="800">
+
+Specifically, you can specify a GPIO number in the URL, `POST` to define a pin state (digitalWrite, digitalRead, etc.), `PUT` to update the value (digitalWrite to HIGH, LOW, etc.), `GET` to get current information, `DELETE` to disable a pin state. And if you do `save`, the pin state is saved in EEPROM, so it is easy to operate as client-side software in IoT.
+
 
 🌱 `RESTuino` makes it possible to communicate *system functions & data* in the IoT.
 
 ✨ `RESTuino` allows us to make... 
 - `IoT client` Arduino GPIOs can be manipulated via REST API.  
 - `Interactive Microcomputer Programming` via [curl](https://github.com/curl/curl), [Talend API Tester](https://chrome.google.com/webstore/detail/talend-api-tester-free-ed/aejoelaoggembcahagimdiliamlcdmfm?hl=ja) or similer.
-
-<img src="https://user-images.githubusercontent.com/22733958/189631190-cb2c6f53-42ee-4e0a-acec-9a4eed86b274.png" width="800">
-
 
 ✍ `RESTuino` can be operated with...
 - [curl](https://github.com/curl/curl)
@@ -41,11 +48,6 @@ or similer.
 
 
 <img src="https://user-images.githubusercontent.com/22733958/188927218-d310dea3-8fe5-4b1a-8fdd-ffdac5e5f4da.gif" width="600">
-
-In embedded development, we have `Arduino` and `CircuitPython` as software initiatives to improve development productivity. Today, a new standard in embedded development is born. 
-It is the `RESTuino`, interactive embedded development firmware for ESP32.
-
-Specifically, you can specify a GPIO number in the URL, `POST` to define a pin state (digitalWrite, digitalRead, etc.), `PUT` to update the value (digitalWrite to HIGH, LOW, etc.), `GET` to get current information, `DELETE` to disable a pin state. And if you do `save`, the pin state is saved in EEPROM, so it is easy to operate as client-side software in IoT.
 
 
 # Requirements
