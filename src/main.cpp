@@ -1,7 +1,6 @@
 #include <Arduino.h>
 
-#include "ssid_define.hpp"
-#include "restuino_func.hpp"
+#include "restuino_func.h"
 
 void setup()
 {
@@ -10,5 +9,5 @@ void setup()
 
 void loop()
 {
-  server.handleClient();
+  restuino_loop();
 }

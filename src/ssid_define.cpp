@@ -1,4 +1,4 @@
-#include "ssid_define.hpp"
+#include "ssid_define.h"
 /*
       ssid definition
 */

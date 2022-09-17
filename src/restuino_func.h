@@ -8,7 +8,13 @@
 #include <ESP32Servo.h>
 #include <ArduinoJson.h>
 
-extern const char *host_name;
+const char *host_name;
+const uint8_t n;
+uint16_t gpio_arr[];
+const uint32_t minUs;
+const uint32_t maxUs;
+const uint8_t angle0;
+const uint8_t angle;
 
 namespace restuino
 {
@@ -28,8 +34,6 @@ namespace restuino
     not_found,
   };
 }
-static WebServer server(80);
-static Servo servo1;
 
 enum restuino::status request_to_num(String req);
 void handle_not_found(void);
@@ -43,4 +47,5 @@ void put_to_control_root(uint8_t setup_mode);
 String ip_to_String(uint32_t ip);
 void handle_root(void);
 void handle_gpio(int pin);
-void restuino_setup();
+extern void restuino_setup();
+extern void restuino_loop();

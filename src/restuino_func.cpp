@@ -1,5 +1,5 @@
-#include "restuino_func.hpp"
-#include "ssid_define.hpp"
+#include "restuino_func.h"
+#include "ssid_define.h"
 
 const char *host_name = "restuino"; // RESTuino
 const uint8_t n = 40;
@@ -10,6 +10,9 @@ const uint32_t maxUs = 5000;
 // 180> angle > angle0 >= 0にすること
 const uint8_t angle0 = 5;
 const uint8_t angle = 60;
+
+WebServer server(80);
+Servo servo1;
 
 enum restuino::status request_to_num(String req)
 {
@@ -433,4 +436,9 @@ void restuino_setup()
   server.onNotFound(handle_not_found);
 
   server.begin();
+}
+
+void restuino_loop()
+{
+  server.handleClient();
 }
