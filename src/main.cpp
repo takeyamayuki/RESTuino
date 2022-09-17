@@ -2,12 +2,13 @@
 
 #include "restuino_func.h"
 
+static RestuinoFunc func;
+
 void setup()
 {
-  restuino_setup();
+  func.restuino_setup();
 }
-
 void loop()
 {
-  restuino_loop();
+  func.restuino_loop();
 }
