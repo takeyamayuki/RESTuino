@@ -17,10 +17,6 @@ const uint32_t maxUs = 5000;
 const uint8_t angle0 = 5;
 const uint8_t angle = 60;
 
-WebServer server(80);
-
-Servo servo1;
-
 enum restuino::status request_to_num(String req)
 {
   if (req == "nan")

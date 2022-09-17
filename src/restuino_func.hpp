@@ -1,5 +1,13 @@
 #pragma once
 #include <Arduino.h>
+#include <WiFi.h>
+#include <EEPROM.h>
+#include <ESPmDNS.h>
+#include <WebServer.h>
+#include <ESP32Servo.h>
+#include <ArduinoJson.h>
+
+extern const char *host_name;
 
 namespace restuino
 {
@@ -19,8 +27,8 @@ namespace restuino
     not_found,
   };
 }
-
-extern const char *host_name;
+extern WebServer server(80);
+extern Servo servo1;
 
 enum restuino::status request_to_num(String req);
 void handle_not_found(void);
