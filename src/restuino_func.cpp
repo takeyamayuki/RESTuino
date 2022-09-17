@@ -1,20 +1,20 @@
 #include "restuino_func.h"
 #include "ssid_define.h"
 
-const char *host_name = "restuino"; // RESTuino
-const uint8_t n = 40;
-uint16_t gpio_arr[n] = {}; //すべて0で初期化
+static const char *host_name = "restuino"; // RESTuino
+static const uint8_t n = 40;
+static uint16_t gpio_arr[n] = {}; //すべて0で初期化
 // Pubished values for SG90 servos; adjust if needed
-const uint32_t minUs = 0;
-const uint32_t maxUs = 5000;
+static const uint32_t minUs = 0;
+static const uint32_t maxUs = 5000;
 // 180> angle > angle0 >= 0にすること
-const uint8_t angle0 = 5;
-const uint8_t angle = 60;
+static const uint8_t angle0 = 5;
+static const uint8_t angle = 60;
 
-WebServer server(80);
-Servo servo1;
+static WebServer server(80);
+static Servo servo1;
 
-enum restuino::status request_to_num(String req)
+enum restuino::status RestuinoFunc::request_to_num(String req)
 {
   if (req == "nan")
     return restuino::nan;
@@ -38,19 +38,19 @@ enum restuino::status request_to_num(String req)
     return restuino::not_found;
 }
 
-void handle_not_found(void)
+void RestuinoFunc::handle_not_found(void)
 {
   server.send(404, "text/plain", "Not Found.\r\n");
 }
 
 // to0 flag check
-bool to0_flag()
+bool RestuinoFunc::to0_flag()
 {
   return (servo1.read() > (angle + angle0) / 2) ? true : false;
 }
 
 // mode=true:angle0,angleのスイッチ, mode=false:自由角度への移動
-void move_sg90(bool mode, uint8_t to_angle)
+void RestuinoFunc::move_sg90(bool mode, uint8_t to_angle)
 {
   if (mode)
     to0_flag() ? servo1.write(angle0) : servo1.write(angle);
@@ -58,7 +58,7 @@ void move_sg90(bool mode, uint8_t to_angle)
     servo1.write(to_angle);
 }
 
-String read_eeprom()
+String RestuinoFunc::read_eeprom()
 {
   String mes;
   for (uint8_t i = 0; i < n; i++) // GPIO:0-39
@@ -70,7 +70,7 @@ String read_eeprom()
 }
 
 // server.send含まない
-bool put_to_control(uint8_t pin, String target)
+bool RestuinoFunc::put_to_control(uint8_t pin, String target)
 {
   Serial.println(gpio_arr[pin]);
 
@@ -118,7 +118,7 @@ bool put_to_control(uint8_t pin, String target)
 }
 
 // server.send含まない
-bool post_to_setup(uint8_t pin, uint8_t setup_mode)
+bool RestuinoFunc::post_to_setup(uint8_t pin, uint8_t setup_mode)
 {
   Serial.println(setup_mode);
 
@@ -164,7 +164,7 @@ bool post_to_setup(uint8_t pin, uint8_t setup_mode)
   }
 }
 
-void load_status()
+void RestuinoFunc::load_status()
 {
   read_eeprom();
   for (uint8_t i = 0; i < n; i++)
@@ -174,7 +174,7 @@ void load_status()
 }
 
 // server.send含んで良い
-void put_to_control_root(uint8_t setup_mode)
+void RestuinoFunc::put_to_control_root(uint8_t setup_mode)
 {
   switch (setup_mode)
   {
@@ -210,7 +210,7 @@ void put_to_control_root(uint8_t setup_mode)
 }
 
 // WiFi.localIP()->IP
-String ip_to_String(uint32_t ip)
+String RestuinoFunc::ip_to_String(uint32_t ip)
 {
   String result = "";
 
@@ -225,7 +225,7 @@ String ip_to_String(uint32_t ip)
   return result;
 }
 
-void handle_root(void)
+void RestuinoFunc::handle_root(void)
 {
   /* PUT: reboot, saveなど */
   if (server.method() == HTTP_PUT)
@@ -267,7 +267,7 @@ void handle_root(void)
 }
 
 // すべてのGPIOを制御
-void handle_gpio(int pin)
+void RestuinoFunc::handle_gpio(int pin)
 {
   /* POST ペリフェラル初期設定 */
   if (server.method() == HTTP_POST)
@@ -326,7 +326,7 @@ void handle_gpio(int pin)
   }
 }
 
-void restuino_setup()
+void RestuinoFunc::restuino_setup()
 {
   // EEPROM setup
   EEPROM.begin(1024); // 1kB     156byte=39*4
@@ -363,82 +363,84 @@ void restuino_setup()
   Serial.println(WiFi.localIP());
 
   // root
-  server.on("/", handle_root);
+  server.on("/", [&]()
+            { handle_root(); });
 
   // 17, 20, 24, 27~31, 37, 38なし
-  server.on("/gpio0", []()
+  server.on("/gpio0", [&]()
             { handle_gpio(0); });
-  server.on("/gpio1", []()
+  server.on("/gpio1", [&]()
             { handle_gpio(1); });
-  server.on("/gpio2", []()
+  server.on("/gpio2", [&]()
             { handle_gpio(2); });
-  server.on("/gpio3", []()
+  server.on("/gpio3", [&]()
             { handle_gpio(3); });
-  server.on("/gpio4", []()
+  server.on("/gpio4", [&]()
             { handle_gpio(4); });
-  server.on("/gpio5", []()
+  server.on("/gpio5", [&]()
             { handle_gpio(5); });
-  server.on("/gpio6", []()
+  server.on("/gpio6", [&]()
             { handle_gpio(6); });
-  server.on("/gpio7", []()
+  server.on("/gpio7", [&]()
             { handle_gpio(7); });
-  server.on("/gpio8", []()
+  server.on("/gpio8", [&]()
             { handle_gpio(8); });
-  server.on("/gpio9", []()
+  server.on("/gpio9", [&]()
             { handle_gpio(9); });
-  server.on("/gpio10", []()
+  server.on("/gpio10", [&]()
             { handle_gpio(10); });
-  server.on("/gpio11", []()
+  server.on("/gpio11", [&]()
             { handle_gpio(11); });
-  server.on("/gpio12", []()
+  server.on("/gpio12", [&]()
             { handle_gpio(12); });
-  server.on("/gpio13", []()
+  server.on("/gpio13", [&]()
             { handle_gpio(13); });
-  server.on("/gpio14", []()
+  server.on("/gpio14", [&]()
             { handle_gpio(14); });
-  server.on("/gpio15", []()
+  server.on("/gpio15", [&]()
             { handle_gpio(15); });
-  server.on("/gpio16", []()
+  server.on("/gpio16", [&]()
             { handle_gpio(16); });
 
-  server.on("/gpio18", []()
+  server.on("/gpio18", [&]()
             { handle_gpio(18); });
-  server.on("/gpio19", []()
+  server.on("/gpio19", [&]()
             { handle_gpio(19); });
 
-  server.on("/gpio21", []()
+  server.on("/gpio21", [&]()
             { handle_gpio(21); });
-  server.on("/gpio22", []()
+  server.on("/gpio22", [&]()
             { handle_gpio(22); });
-  server.on("/gpio23", []()
+  server.on("/gpio23", [&]()
             { handle_gpio(23); });
 
-  server.on("/gpio25", []()
+  server.on("/gpio25", [&]()
             { handle_gpio(25); });
-  server.on("/gpio26", []()
+  server.on("/gpio26", [&]()
             { handle_gpio(26); });
 
-  server.on("/gpio32", []()
+  server.on("/gpio32", [&]()
             { handle_gpio(32); });
-  server.on("/gpio33", []()
+  server.on("/gpio33", [&]()
             { handle_gpio(33); });
-  server.on("/gpio34", []()
+  server.on("/gpio34", [&]()
             { handle_gpio(34); });
-  server.on("/gpio35", []()
+  server.on("/gpio35", [&]()
             { handle_gpio(35); });
-  server.on("/gpio36", []()
+  server.on("/gpio36", [&]()
             { handle_gpio(36); });
 
-  server.on("/gpio39", []()
+  server.on("/gpio39", [&]()
             { handle_gpio(39); });
 
   // onNotFound
-  server.onNotFound(handle_not_found);
+  server.onNotFound([&]()
+                    { handle_not_found(); });
 
   server.begin();
 }
 
-void restuino_loop()
+void RestuinoFunc::restuino_loop()
 {
   server.handleClient();
 }
