@@ -1,0 +1,1 @@
+curl restuino.local/gpio32 -X POST -H 'Content-Type: text/plain' -d 'analogRead'
