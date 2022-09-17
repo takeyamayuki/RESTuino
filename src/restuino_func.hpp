@@ -42,3 +42,4 @@ void put_to_control_root(uint8_t setup_mode);
 String ip_to_String(uint32_t ip);
 void handle_root(void);
 void handle_gpio(int pin);
+void restuino_setup();
