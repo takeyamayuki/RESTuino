@@ -3,7 +3,7 @@
 </h1>
 
 <div align="center">
-   A firmware for ESP32 to handle arduino GPIO via REST API  
+   A library, firmware to handle arduino GPIO via REST API / arduino wrapper with REST API
 </div>
 
 # Contents
