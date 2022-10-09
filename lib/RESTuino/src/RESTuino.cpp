@@ -15,25 +15,25 @@ static Servo servo1;
 enum RESTuino::status RESTuino::request_to_num(String req)
 {
   if (req == "nan")
-    return restuino::nan;
+    return nan;
   else if (req == "digitalRead")
-    return restuino::digitalread;
+    return digitalread;
   else if (req == "digitalWrite")
-    return restuino::digitalwrite;
+    return digitalwrite;
   else if (req == "analogRead")
-    return restuino::analogread;
+    return analogread;
   else if (req == "ledcWrite")
-    return restuino::ledcwrite;
+    return ledcwrite;
   else if (req == "Servo")
-    return restuino::servo;
+    return servo;
   else if (req == "save")
-    return restuino::save;
+    return save;
   else if (req == "load")
-    return restuino::load;
+    return load;
   else if (req == "reboot")
-    return restuino::reboot;
+    return reboot;
   else
-    return restuino::not_found;
+    return not_found;
 }
 
 void RESTuino::handle_not_found(void)
@@ -74,7 +74,7 @@ bool RESTuino::put_to_control(uint8_t pin, String target)
 
   switch (gpio_arr[pin])
   {
-  case restuino::servo:
+  case servo:
     if (target == "switch")
     {
       move_sg90(true, 0);
@@ -87,12 +87,12 @@ bool RESTuino::put_to_control(uint8_t pin, String target)
     }
     break;
 
-  case restuino::ledcwrite:
+  case ledcwrite:
     ledcWrite(0, target.toInt());
     return true;
     break;
 
-  case restuino::digitalwrite:
+  case digitalwrite:
     if (target == "HIGH" or target == "1")
     {
       digitalWrite(pin, HIGH);
@@ -122,33 +122,33 @@ bool RESTuino::post_to_setup(uint8_t pin, uint8_t setup_mode)
 
   switch (setup_mode)
   {
-  case restuino::servo:
+  case servo:
     servo1.setPeriodHertz(50); // Standard 50hz servo
     servo1.attach(pin, minUs, maxUs);
     gpio_arr[pin] = setup_mode; // 0-99はgpio statusとして保存
     return true;
     break;
 
-  case restuino::ledcwrite:
+  case ledcwrite:
     ledcSetup(0, 12800, 8);
     ledcAttachPin(pin, 0);
     gpio_arr[pin] = setup_mode;
     return true;
     break;
 
-  case restuino::digitalwrite:
+  case digitalwrite:
     pinMode(pin, OUTPUT);
     gpio_arr[pin] = setup_mode;
     return true;
     break;
 
-  case restuino::digitalread:
+  case digitalread:
     pinMode(pin, INPUT);
     gpio_arr[pin] = setup_mode;
     return true;
     break;
 
-  case restuino::analogread:
+  case analogread:
     pinMode(pin, ANALOG);
     gpio_arr[pin] = setup_mode;
     return true;
@@ -176,12 +176,12 @@ void RESTuino::put_to_control_root(uint8_t setup_mode)
 {
   switch (setup_mode)
   {
-  case restuino::reboot:
+  case reboot:
     server.send(202, "text/plain", "Rebooting...\r\n");
     ESP.restart();
     break;
 
-  case restuino::save:
+  case save:
     for (uint8_t i = 0; i < n; i++)
     {
       EEPROM.put(i * 4, gpio_arr[i]); // address=i*4
@@ -194,7 +194,7 @@ void RESTuino::put_to_control_root(uint8_t setup_mode)
     ESP.restart();
     break;
 
-  case restuino::load: //作業途中でloadすると、キャッシュされたgpio_arrが消える
+  case load: //作業途中でloadすると、キャッシュされたgpio_arrが消える
     load_status();
     server.send(200, "text/plain", "Loaded\r\n");
     break;
@@ -293,15 +293,15 @@ void RESTuino::handle_gpio(int pin)
     Serial.println(gpio_arr[pin]);
     switch (gpio_arr[pin])
     {
-    case restuino::servo:
+    case servo:
       server.send(200, "text/plain", String(servo1.read()) + "\r\n"); // statusをクライアントに返す
       break;
 
-    case restuino::digitalread:
+    case digitalread:
       server.send(200, "text/plain", String(digitalRead(pin)) + "\r\n");
       break;
 
-    case restuino::analogread:
+    case analogread:
       server.send(200, "text/plain", String(analogRead(pin)) + "\r\n");
       break;
 
@@ -314,7 +314,7 @@ void RESTuino::handle_gpio(int pin)
   /* DELETE : ピンをnan状態にする */
   else if (server.method() == HTTP_DELETE)
   {
-    gpio_arr[pin] = (uint8_t)restuino::nan;
+    gpio_arr[pin] = (uint8_t)nan;
     server.send(202, "text/plain", "Change the pin to nan status... \r\n");
     ESP.restart();
   }
