@@ -13,9 +13,9 @@ class RESTuino
 public:
   void setup();
   void loop();
-  const char *host_name;
-  const char *ssid_def;
-  const char *ssid_pass;
+  const char *host_name = "";
+  const char *ssid_def = "";
+  const char *ssid_pass = "";
 
 private:
   enum status
@@ -33,7 +33,7 @@ private:
     reboot,
     not_found,
   };
-  enum restuino::status request_to_num(String req);
+  enum status request_to_num(String req);
   void handle_not_found(void);
   bool to0_flag();
   void move_sg90(bool mode, uint8_t to_angle);
