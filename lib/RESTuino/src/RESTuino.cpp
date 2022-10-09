@@ -1,7 +1,5 @@
-#include "restuino_func.h"
-#include "ssid_define.h"
+#include "RESTuino.h"
 
-static const char *host_name = "restuino"; // RESTuino
 static const uint8_t n = 40;
 static uint16_t gpio_arr[n] = {}; //すべて0で初期化
 // Pubished values for SG90 servos; adjust if needed
@@ -14,7 +12,7 @@ static const uint8_t angle = 60;
 static WebServer server(80);
 static Servo servo1;
 
-enum restuino::status RestuinoFunc::request_to_num(String req)
+enum RESTuino::status RESTuino::request_to_num(String req)
 {
   if (req == "nan")
     return restuino::nan;
@@ -38,19 +36,19 @@ enum restuino::status RestuinoFunc::request_to_num(String req)
     return restuino::not_found;
 }
 
-void RestuinoFunc::handle_not_found(void)
+void RESTuino::handle_not_found(void)
 {
   server.send(404, "text/plain", "Not Found.\r\n");
 }
 
 // to0 flag check
-bool RestuinoFunc::to0_flag()
+bool RESTuino::to0_flag()
 {
   return (servo1.read() > (angle + angle0) / 2) ? true : false;
 }
 
 // mode=true:angle0,angleのスイッチ, mode=false:自由角度への移動
-void RestuinoFunc::move_sg90(bool mode, uint8_t to_angle)
+void RESTuino::move_sg90(bool mode, uint8_t to_angle)
 {
   if (mode)
     to0_flag() ? servo1.write(angle0) : servo1.write(angle);
@@ -58,7 +56,7 @@ void RestuinoFunc::move_sg90(bool mode, uint8_t to_angle)
     servo1.write(to_angle);
 }
 
-String RestuinoFunc::read_eeprom()
+String RESTuino::read_eeprom()
 {
   String mes;
   for (uint8_t i = 0; i < n; i++) // GPIO:0-39
@@ -70,7 +68,7 @@ String RestuinoFunc::read_eeprom()
 }
 
 // server.send含まない
-bool RestuinoFunc::put_to_control(uint8_t pin, String target)
+bool RESTuino::put_to_control(uint8_t pin, String target)
 {
   Serial.println(gpio_arr[pin]);
 
@@ -118,7 +116,7 @@ bool RestuinoFunc::put_to_control(uint8_t pin, String target)
 }
 
 // server.send含まない
-bool RestuinoFunc::post_to_setup(uint8_t pin, uint8_t setup_mode)
+bool RESTuino::post_to_setup(uint8_t pin, uint8_t setup_mode)
 {
   Serial.println(setup_mode);
 
@@ -164,7 +162,7 @@ bool RestuinoFunc::post_to_setup(uint8_t pin, uint8_t setup_mode)
   }
 }
 
-void RestuinoFunc::load_status()
+void RESTuino::load_status()
 {
   read_eeprom();
   for (uint8_t i = 0; i < n; i++)
@@ -174,7 +172,7 @@ void RestuinoFunc::load_status()
 }
 
 // server.send含んで良い
-void RestuinoFunc::put_to_control_root(uint8_t setup_mode)
+void RESTuino::put_to_control_root(uint8_t setup_mode)
 {
   switch (setup_mode)
   {
@@ -210,7 +208,7 @@ void RestuinoFunc::put_to_control_root(uint8_t setup_mode)
 }
 
 // WiFi.localIP()->IP
-String RestuinoFunc::ip_to_String(uint32_t ip)
+String RESTuino::ip_to_String(uint32_t ip)
 {
   String result = "";
 
@@ -225,7 +223,7 @@ String RestuinoFunc::ip_to_String(uint32_t ip)
   return result;
 }
 
-void RestuinoFunc::handle_root(void)
+void RESTuino::handle_root(void)
 {
   /* PUT: reboot, saveなど */
   if (server.method() == HTTP_PUT)
@@ -267,7 +265,7 @@ void RestuinoFunc::handle_root(void)
 }
 
 // すべてのGPIOを制御
-void RestuinoFunc::handle_gpio(int pin)
+void RESTuino::handle_gpio(int pin)
 {
   /* POST ペリフェラル初期設定 */
   if (server.method() == HTTP_POST)
@@ -326,7 +324,7 @@ void RestuinoFunc::handle_gpio(int pin)
   }
 }
 
-void RestuinoFunc::restuino_setup()
+void RESTuino::setup()
 {
   // EEPROM setup
   EEPROM.begin(1024); // 1kB     156byte=39*4
@@ -337,24 +335,15 @@ void RestuinoFunc::restuino_setup()
   delay(100);
 
   // WiFiに接続
-  for (uint8_t i = 0; i < len_ssid; i++)
+  Serial.print("Connecting to ");
+  Serial.print(ssid_def);
+  WiFi.begin(ssid_def, ssid_pass);
+  while (WiFi.status() != WL_CONNECTED)
   {
-    Serial.print("Connecting to ");
-    Serial.print(ssid_def[i]);
-    WiFi.begin(ssid_def[i], ssid_pass[i]);
-    uint32_t cnt = 0;
-    while (WiFi.status() != WL_CONNECTED)
-    {
-      delay(100);
-      Serial.print(".");
-      cnt++;
-      if (cnt >= 80) // 8sec
-        break;
-    }
-    Serial.println();
-    if (WiFi.status() == WL_CONNECTED)
-      break;
+    delay(100);
+    Serial.print(".");
   }
+  Serial.println();
 
   MDNS.begin(host_name); // activate host_name.local
   Serial.println();
@@ -440,7 +429,7 @@ void RestuinoFunc::restuino_setup()
   server.begin();
 }
 
-void RestuinoFunc::restuino_loop()
+void RESTuino::loop()
 {
   server.handleClient();
 }

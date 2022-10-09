@@ -8,11 +8,19 @@
 #include <ESP32Servo.h>
 #include <ArduinoJson.h>
 
-namespace restuino
+class RESTuino
 {
+public:
+  void setup();
+  void loop();
+  const char *host_name;
+  const char *ssid_def;
+  const char *ssid_pass;
+
+private:
   enum status
   {
-    nan = 0,
+    nan,
     digitalread,
     digitalwrite,
     analogread,
@@ -20,20 +28,11 @@ namespace restuino
     servo,
     touch,    // kore
     dacwrite, // kore
-    save = 100,
+    save,
     load,
     reboot,
     not_found,
   };
-}
-
-class RestuinoFunc
-{
-public:
-  void restuino_setup();
-  void restuino_loop();
-
-private:
   enum restuino::status request_to_num(String req);
   void handle_not_found(void);
   bool to0_flag();
