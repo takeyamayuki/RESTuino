@@ -1,14 +1,15 @@
-#include <Arduino.h>
+#include <RESTuino.h>
 
-#include "restuino_func.h"
-
-static RestuinoFunc func;
+static RESTuino restuino;
 
 void setup()
 {
-  func.restuino_setup();
+  restuino.host_name = "restuino";
+  restuino.ssid_def = "";
+  restuino.ssid_pass = "";
+  restuino.setup();
 }
 void loop()
 {
-  func.restuino_loop();
+  restuino.loop();
 }
