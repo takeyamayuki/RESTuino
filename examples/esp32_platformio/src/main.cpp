@@ -6,8 +6,8 @@ static RESTuino restuino;
 void setup()
 {
 	restuino.host_name = "restuino";
-	restuino.ssid_def = "Extender-G-CE1C";
-	restuino.ssid_pass = "jifmckdmk6inr";
+	restuino.ssid_def = "YOUR_SSID";
+	restuino.ssid_pass = "YOUR_PASSWORD";
 	restuino.serial_baud = 9600;
 	restuino.setup();
 }
