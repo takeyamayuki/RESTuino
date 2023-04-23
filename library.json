@@ -1,0 +1,32 @@
+{
+    "name": "RESTuino",
+    "version": "1.0.1",
+    "description": "A library to handle arduino GPIO via REST API",
+    "keywords": "REST, RESTful API, Arduino, GPIO, RESTuino",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/takeyamayuki/RESTuino.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Yuki TAKEYAMA",
+        "email": "namiki.takeyama@gmail.com",
+        "url": "https://takeyamayuki.github.io/",
+        "maintainer": true
+      },
+      {
+        "name": "Ar-Ray-code"
+      }
+    ],
+    "license": " Apache-2.0 license",
+    "homepage": "https://zenn.dev/ninzin/articles/5c859a0bfc1ee6/",
+    "dependencies": {
+        "ownername/print": "~1.3.0",
+        "madhephaestus/ESP32Servo":"~0.11.0",
+        "bblanchon/ArduinoJson":"~6.19.4"
+    },
+    "frameworks": "Arduino",
+    "platforms": "*"
+  }
