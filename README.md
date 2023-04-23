@@ -57,57 +57,29 @@ or similer.
     - [ESP32 DevKitC](https://www.espressif.com/en/products/devkits/esp32-devkitc) 
     - [MH ET LIVE ESP32DevKIT](https://ja.aliexpress.com/item/32880702799.html?spm=a2g0s.8937460.0.0.72832e0edJMMVm&gatewayAdapt=glo2jpn)    
 
-- PlatformIO
-
-    - [PlatformIO VSCode extension](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide)  
-
-    - [PlatformIO Core](https://docs.platformio.org/en/latest/core/installation.html)
-        ```sh
-        $ pip install -U platformio
-        ```
+- PlatformIO or Arduino IDE
 
 # Installation
+
+See [PlatformIO example](/examples/esp32_platformio/), [Arduino IDE example](/examples/esp32_basic/esp32_basic.ino)
+
+
 1. Clone this repository.
     ```sh
     $ git clone https://github.com/takeyamayuki/RESTuino.git
     ```
-1. Define `ssid`, `password` of your wifi router by changing [ssid_define.cpp](src/ssid_define.cpp).
-    ```sh
-    $ cd RESTuino
-    $ vi src/ssid_define.cpp
-    ``` 
-    Change `*ssid_def[]`, `*ssid_pass[]` to your wifi SSID, password and `len_ssid` to the number of ssid, password sets you defined.
-    ```cpp 
-    uint8_t len_ssid = 2;
-    const char *ssid_def[] = {"ssid1", "ssid2"};
-    const char *ssid_pass[] = {"pass1", "pass2"};
-    ```
-1. If more than one RESTuino is to be installed, change `host_name`([here](https://github.com/takeyamayuki/RESTuino/blob/main/src/restuino_func.cpp#L4)).
-    ```sh
-    $ vi src/main.cpp
-    ``` 
-    ```diff 
-    static const char *host_name = 
-    -  "restuino"; 
-    +  "restuino2"; 
-    ```
-<!-- 
-1. Clear EEPROM.
-    ```sh
-    # for esp32-devkit
-    $ pio run -e esp32dev-setup -t upload
-    # for MH ET LIVE ESP32DevKIT
-    $ pio run -e mhetesp-setup -t upload
-    ``` -->
+2. Open the `esp32_platformio` example in PlatformIO or `esp32_basic` example in Arduino IDE.
 
-4. Build and upload [RESTuino](src).
-    ```sh
-    # for esp32-devkit
-    $ pio run -e esp32dev -t upload
-    # for MH ET LIVE ESP32DevKIT
-    $ pio run -e mhetesp -t upload
+1. Define `ssid`, `password` of your wifi router by changing `ssid_def`, `ssid_pass`. If more than one RESTuino is to be installed, change `host_name`. `serial_baud` is the baud rate of the serial monitor. `9600` is the default value.
+
+    ```cpp
+    restuino.host_name = "restuino";
+	restuino.ssid_def = "YOUR_SSID";
+	restuino.ssid_pass = "YOUR_PASSWORD";
+	restuino.serial_baud = 9600;
     ```
 
+4. Build and upload.
 5. Clear EEPROM.
 
     Initialize the RESTuino system when you see `WiFi connected.` on the serial monitor.
@@ -120,6 +92,7 @@ or similer.
 6. Use this the way you want to use it.
 
 
+
 # Usage
 
 1. Specify the GPIO number in the URL
@@ -128,7 +101,7 @@ or similer.
 4. `GET` to obtain current information (digitalRead, etc.)
 5. `DELETE` to disable the pin status
 
-> **Note**   
+> **Note**  
 > When sending the request body, always specify `Content-Type: text/plain` as the header.
 
 ## Control GPIO

@@ -1,0 +1,1 @@
+curl restuino.local/gpio32 -X GET
