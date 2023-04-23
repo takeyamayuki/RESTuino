@@ -4,3 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 .vscode/settings.json
+
+examples/esp32_platformio/.vscode/extensions.json
