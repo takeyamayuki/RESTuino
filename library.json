@@ -5,7 +5,7 @@
     "keywords": "REST, RESTful API, Arduino, GPIO, RESTuino",
     "repository": {
         "type": "git",
-        "url": "https://github.com/takeyamayuki/RESTuino/tree/platfomio"
+        "url": "https://github.com/takeyamayuki/RESTuino.git"
     },
     "authors": [
         {
@@ -25,5 +25,5 @@
         "bblanchon/ArduinoJson": "~6.19.4"
     },
     "frameworks": "Arduino",
-    "platforms": "*"
+    "platforms": "esp32"
 }
