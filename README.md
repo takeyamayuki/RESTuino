@@ -63,6 +63,9 @@ or similer.
 
 See [PlatformIO example](/examples/esp32_platformio/), [Arduino IDE example](/examples/esp32_basic/esp32_basic.ino)
 
+You can install the library in two ways.
+- [PlatformIO](https://registry.platformio.org/libraries/takeyamayuki/RESTuino)
+- [Arduino IDE](https://reference.arduino.cc/reference/en/libraries/restuino/)
 
 1. Clone this repository.
     ```sh
